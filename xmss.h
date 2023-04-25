@@ -33,9 +33,9 @@ int xmss_sign_open(unsigned char *m, unsigned long long *mlen,
 
 /* 
  * Returns:
- * remaining signatures
+ * The number of remaining signatures
  */
-int xmss_remain_signatures(unsigned long long *remain, const unsigned  char *sk);
+int xmss_remaining_signatures(unsigned long long *remain, const unsigned  char *sk);
 
 /*
  * Generates a XMSSMT key pair for a given parameter set.
@@ -67,8 +67,8 @@ int xmssmt_sign_open(unsigned char *m, unsigned long long *mlen,
 
 /* 
  * Returns:
- * remaining signatures
+ * The number of remaining signatures
  */
-int xmssmt_remain_signatures(unsigned long long *remain, const unsigned  char *sk);
+int xmssmt_remaining_signatures(unsigned long long *remain, const unsigned  char *sk);
 
 #endif
