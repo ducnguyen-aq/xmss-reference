@@ -11,7 +11,7 @@
 
 #define CALC(start, stop) ((stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3)
 
-/* 
+/*
  * This array collect the performance number
  * and then use it to compute average and median number
  */
@@ -76,9 +76,9 @@ int test_keygen(unsigned char *pk, unsigned char *sk)
 
     printf("Generating keypair.. %s\n", XMSS_OID);
 
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+    clock_gettime(CLOCK_REALTIME, &start);
     ret = crypto_sign_keypair(pk, sk);
-    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+    clock_gettime(CLOCK_REALTIME, &stop);
 
     result = CALC(start, stop);
     printf("took %lf us (%.2lf sec)\n", result, result / 1e6);
@@ -96,11 +96,12 @@ int test_sign(unsigned char *sm, unsigned long long *smlen,
     int ret;
 
     printf("Creating %d signatures..\n", XMSS_SIGNATURES);
+
     for (int i = 0; i < XMSS_SIGNATURES; i++)
     {
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+        clock_gettime(CLOCK_REALTIME, &start);
         ret = crypto_sign(sm, smlen, m, mlen, sk);
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+        clock_gettime(CLOCK_REALTIME, &stop);
 
         t[i] = CALC(start, stop);
 
@@ -130,11 +131,12 @@ int test_verify(unsigned char *mout, unsigned long long *moutlen,
     int ret;
 
     printf("Verifying %d signatures..\n", XMSS_SIGNATURES);
+
     for (int i = 0; i < XMSS_SIGNATURES; i++)
     {
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
+        clock_gettime(CLOCK_REALTIME, &start);
         ret = crypto_sign_open(mout, moutlen, sm, smlen, pk);
-        clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
+        clock_gettime(CLOCK_REALTIME, &stop);
 
         t[i] = CALC(start, stop);
 
@@ -162,7 +164,7 @@ int test_verify(unsigned char *mout, unsigned long long *moutlen,
     return ret;
 }
 
-/* 
+/*
  * Testing remaining signatures
  */
 int test_remain(unsigned char *sk)
@@ -171,17 +173,19 @@ int test_remain(unsigned char *sk)
     uint32_t oid = 0;
     xmss_params params;
     int ret;
-    ret = crypto_remain_signatures(&remain, sk);
+    ret = crypto_remaining_signatures(&remain, sk);
 
-    for (int i = 0; i < XMSS_OID_LEN; i++) {
+    for (int i = 0; i < XMSS_OID_LEN; i++)
+    {
         oid |= sk[XMSS_OID_LEN - i - 1] << (i * 8);
     }
 
 #if XMSSMT
-    if (xmssmt_parse_oid(&params, oid)) {
+    if (xmssmt_parse_oid(&params, oid))
 #else
-    if (xmss_parse_oid(&params, oid)) {
-#endif 
+    if (xmss_parse_oid(&params, oid))
+#endif
+    {
         return -1;
     }
     max = ((1ULL << params.full_height) - 1);
