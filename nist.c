@@ -1,19 +1,25 @@
+/*=============================================================================
+ * Copyright (c) 2022 by SandboxAQ Inc
+ * Author: Duc Tri Nguyen
+ * SPDX-License-Identifier: MIT
+=============================================================================*/
 #include <oqs/common.h>
 #include <stdio.h>
+
 #include "api.h"
 #include "params.h"
 #include "nist_params.h"
 #include "xmss.h"
 
 /*************************************************
- * Name:        crypto_sign_keypair
+ * Name:        XMSS_crypto_sign_keypair
  *
  * Description: Generates public and private key.
  *
  * Arguments:   - uint8_t *pk: pointer to output public key (allocated
- *                             array of LMS_CRYPTO_PUBLICKEYBYTES bytes)
+ *                             array of CRYPTO_PUBLIC_KEY bytes)
  *              - uint8_t *sk: pointer to output private key (allocated
- *                             array of LMS_CRYPTO_SECRETKEYBYTES bytes)
+ *                             array of CRYPTO_SECRET_KEY bytes)
  *
  * Returns 0 (success), -1 otherwise
  **************************************************/
@@ -40,6 +46,9 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
 #endif
         return OQS_ERROR;
     }
+#if DEBUG
+    printf("sklen, pklen, siglen = %llu, %u, %u\n", params.sk_bytes, params.pk_bytes, params.sig_bytes);
+#endif
 
     ret |= XMSS_KEYPAIR(pk, sk, oid);
     if (ret)
@@ -54,20 +63,20 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
 }
 
 /*************************************************
- * Name:        crypto_sign
+ * Name:        XMSS_crypto_sign
  *
  * Description: Computes signature.
  *
  * Arguments:   - uint8_t *sm:   pointer to output signature (of length CRYPTO_BYTES)
- *              - uint8_t *m:    pointer to message to be signed
- *              - uint8_t *sk:   pointer to bit-packed secret key
- *              - unsigned long long *smlen: pointer to output length of signature
- *              - unsigned long long mlen:   length of message
+ *              - uint64_t *smlen: pointer to output length of signature
+ *              - uint8_t *m:     pointer to message to be signed
+ *              - uint64_t mlen:    length of message
+ *              - uint8_t *sk:    pointer to bit-packed secret key
  *
  * Returns 0 (success), -1 otherwise
  **************************************************/
-int crypto_sign(unsigned char *sm, unsigned long long *smlen,
-                const unsigned char *m, unsigned long long mlen, unsigned char *sk)
+int crypto_sign(unsigned char *sm, uint64_t *smlen,
+                const unsigned char *m, uint64_t mlen, unsigned char *sk)
 {
     int ret = XMSS_SIGN(sk, sm, smlen, m, mlen);
     if (ret)
@@ -82,21 +91,22 @@ int crypto_sign(unsigned char *sm, unsigned long long *smlen,
 }
 
 /*************************************************
- * Name:        crypto_sign_open
+ * Name:        XMSS_crypto_sign_open
  *
  * Description: Verify signed message.
  *
- * Arguments:   - uint8_t *m: pointer to output message (allocated
+ * Arguments:   
+ *              - uint8_t *m: pointer to output message (allocated
  *                            array with smlen bytes), can be equal to sm
- *              - const uint8_t *sm: pointer to signed message
- *              - const uint8_t *pk: pointer to bit-packed public key
- *              - unsigned long long *mlen: pointer to output length of message
- *              - unsigned long long smlen: length of signed message
+ *              - uint64_t *mlen: pointer to output length of message
+ *              - uint8_t *sm: pointer to signed message
+ *              - uint64_t smlen: length of signed message
+ *              - uint8_t *pk: pointer to bit-packed public key
  *
  * Returns 0 if signed message could be verified correctly and -1 otherwise
  **************************************************/
-int crypto_sign_open(unsigned char *m, unsigned long long *mlen,
-                     const unsigned char *sm, unsigned long long smlen, const unsigned char *pk)
+int crypto_sign_open(unsigned char *m, uint64_t *mlen,
+                     const unsigned char *sm, uint64_t smlen, const unsigned char *pk)
 {
     if (XMSS_SIGN_OPEN(m, mlen, sm, smlen, pk))
     {
@@ -110,18 +120,18 @@ int crypto_sign_open(unsigned char *m, unsigned long long *mlen,
 }
 
 /*************************************************
- * Name:        crypto_remain_signatures
+ * Name:        XMSS_crypto_remaining_signatures
  *
- * Description: Return number of signature left
+ * Description: Return number of signatures left
  *
- * Arguments:   - unsigned long long *remain: remaining signatures
- *              - const uint8_t *sk: pointer to bit-packed private key
+ * Arguments:   - uint64_t *remain: remaining signatures
+ *              - uint8_t *sk: pointer to bit-packed private key
  *
  * Returns 0 (sucess), -1 otherwise
  **************************************************/
-int crypto_remain_signatures(unsigned long long *remain, const unsigned char *sk)
+int crypto_remaining_signatures(uint64_t *remain, const unsigned char *sk)
 {
-    if (XMSS_REMAIN_SIG(remain, sk))
+    if (XMSS_REMAINING_SIG(remain, sk))
     {
 #if DEBUG
         printf("Error counting remaining signatures\n");
