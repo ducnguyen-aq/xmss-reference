@@ -1,25 +1,6 @@
 #include <stdint.h>
 #include <string.h>
 
-
-/* 
- * TODO: By default, libOQS build point to OpenSSL hash algorithm
- * To use SHA2 native instruction in lib, we must either
- * - Build libQOS with OQS_USE_SHA2_OPENSSL to `OFF`
- * - Include direct SHA2-NI from libOQS here
- * 
- * The 1st approach needs to rebuild the library
- * The 2nd approach needs libOQS to expose SHA2_NI in file `src/common/sha2/sha2.c`
- * 
- * Since this is the reference implementation of XMSS, I will rebuild library in the 1st approach,
- * hence, to reproduce this code, please rebuild your libOQS. 
- * 
- * From: 
- * `alg_support.cmake`: `cmake_dependent_option(OQS_USE_SHA2_OPENSSL "" ON "OQS_USE_OPENSSL" OFF)`
- * To
- * `alg_support.cmake`: `cmake_dependent_option(OQS_USE_SHA2_OPENSSL "" OFF "OQS_USE_OPENSSL" OFF)`
- */
-
 #include <oqs/sha2.h>
 #include <oqs/sha3.h>
 
@@ -47,7 +28,7 @@ static int core_hash(const xmss_params *params,
                      unsigned char *out,
                      const unsigned char *in, unsigned long long inlen)
 {
-    unsigned char buf[64];
+    unsigned char buf[32];
 
     if (params->n == 24 && params->func == XMSS_SHA2) {
         OQS_SHA2_sha256(buf, in, inlen);
