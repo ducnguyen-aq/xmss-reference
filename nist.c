@@ -75,8 +75,8 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
  *
  * Returns 0 (success), -1 otherwise
  **************************************************/
-int crypto_sign(unsigned char *sm, uint64_t *smlen,
-                const unsigned char *m, uint64_t mlen, unsigned char *sk)
+int crypto_sign(unsigned char *sm, unsigned long long *smlen,
+                const unsigned char *m, unsigned long long mlen, unsigned char *sk)
 {
     int ret = XMSS_SIGN(sk, sm, smlen, m, mlen);
     if (ret)
@@ -105,8 +105,8 @@ int crypto_sign(unsigned char *sm, uint64_t *smlen,
  *
  * Returns 0 if signed message could be verified correctly and -1 otherwise
  **************************************************/
-int crypto_sign_open(unsigned char *m, uint64_t *mlen,
-                     const unsigned char *sm, uint64_t smlen, const unsigned char *pk)
+int crypto_sign_open(unsigned char *m, unsigned long long *mlen,
+                     const unsigned char *sm, unsigned long long smlen, const unsigned char *pk)
 {
     if (XMSS_SIGN_OPEN(m, mlen, sm, smlen, pk))
     {
@@ -129,7 +129,7 @@ int crypto_sign_open(unsigned char *m, uint64_t *mlen,
  *
  * Returns 0 (sucess), -1 otherwise
  **************************************************/
-int crypto_remaining_signatures(uint64_t *remain, const unsigned char *sk)
+int crypto_remaining_signatures(unsigned long long *remain, const unsigned char *sk)
 {
     if (XMSS_REMAINING_SIG(remain, sk))
     {
