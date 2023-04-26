@@ -1,6 +1,10 @@
-CC = /usr/bin/gcc
+CC = clang
+
+LIBOQS = -L/opt/homebrew/opt/liboqs/lib -I/opt/homebrew/opt/liboqs/include
+OPENSSL = -L/opt/homebrew/opt/openssl@1.1/lib -I/opt/homebrew/opt/openssl@1.1/include
+
 CFLAGS = -Wall -g -O3 -Wextra -Wpedantic #-fsanitize-address-use-after-return=always -fsanitize=address
-LDLIBS = -loqs
+LDLIBS = -lcrypto -loqs $(LIBOQS) $(OPENSSL) 
 
 SOURCES = params.c hash.c fips202.c hash_address.c randombytes.c wots.c xmss.c xmss_core.c xmss_commons.c utils.c
 HEADERS = params.h hash.h fips202.h hash_address.h randombytes.h wots.h xmss.h xmss_core.h xmss_commons.h utils.h
