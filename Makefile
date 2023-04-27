@@ -6,8 +6,8 @@ OPENSSL = -L/opt/homebrew/opt/openssl@1.1/lib -I/opt/homebrew/opt/openssl@1.1/in
 CFLAGS = -Wall -g -O3 -Wextra -Wpedantic #-fsanitize-address-use-after-return=always -fsanitize=address
 LDLIBS = -lcrypto -loqs $(LIBOQS) $(OPENSSL) 
 
-SOURCES = params.c hash.c fips202.c hash_address.c randombytes.c wots.c xmss.c xmss_core.c xmss_commons.c utils.c
-HEADERS = params.h hash.h fips202.h hash_address.h randombytes.h wots.h xmss.h xmss_core.h xmss_commons.h utils.h
+SOURCES = params.c hash.c hash_address.c randombytes.c wots.c xmss.c xmss_core.c xmss_commons.c utils.c
+HEADERS = params.h hash.h hash_address.h randombytes.h wots.h xmss.h xmss_core.h xmss_commons.h utils.h
 
 SOURCES_FAST = $(subst xmss_core.c,xmss_core_fast.c,$(SOURCES))
 HEADERS_FAST = $(subst xmss_core.c,xmss_core_fast.c,$(HEADERS))
@@ -22,7 +22,7 @@ TESTS = test/wots \
 		test/xmssmt_fast \
 		test/maxsigsxmss \
 		test/maxsigsxmssmt \
-		test/nist_test
+		test/sign_test
 
 UI = ui/xmss_keypair \
 	 ui/xmss_sign \
@@ -49,8 +49,8 @@ test: $(TESTS:=.exec)
 test/%.exec: test/%
 	@$<
 
-test/nist_test: nist.c nist_test.c nist_params.h api.h $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
-	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) nist_test.c $< $(LDLIBS)
+test/sign_test: sign.c sign_params.h sign.h test/sign_test.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
+	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_test.c $< $(LDLIBS)
 
 test/xmss_fast: test/xmss.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) -DXMSS_SIGNATURES=1024 $(CFLAGS) -o $@ $(SOURCES_FAST) $< $(LDLIBS)

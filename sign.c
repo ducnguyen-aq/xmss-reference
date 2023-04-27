@@ -6,10 +6,8 @@
 #include <oqs/common.h>
 #include <stdio.h>
 
-#include "api.h"
-#include "params.h"
-#include "nist_params.h"
-#include "xmss.h"
+#include "sign.h"
+#include "sign_params.h"
 
 /*************************************************
  * Name:        XMSS_crypto_sign_keypair
@@ -32,30 +30,19 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk)
     ret |= XMSS_STR_TO_OID(&oid, XMSS_OID);
     if (ret)
     {
-#if DEBUG
-        printf("Did not recognize %s!\n", XMSS_OID);
-#endif
         return OQS_ERROR;
     }
 
     ret |= XMSS_PARSE_OID(&params, oid);
     if (ret)
     {
-#if DEBUG
-        printf("Could not parse OID for %s!\n", XMSS_OID);
-#endif
         return OQS_ERROR;
     }
-#if DEBUG
-    printf("sklen, pklen, siglen = %llu, %u, %u\n", params.sk_bytes, params.pk_bytes, params.sig_bytes);
-#endif
 
+    // TODO: set OID directly here
     ret |= XMSS_KEYPAIR(pk, sk, oid);
     if (ret)
     {
-#if DEBUG
-        printf("Error generating keypair %d\n", ret);
-#endif
         return OQS_ERROR;
     }
 
@@ -81,9 +68,6 @@ int crypto_sign(unsigned char *sm, unsigned long long *smlen,
     int ret = XMSS_SIGN(sk, sm, smlen, m, mlen);
     if (ret)
     {
-#if DEBUG
-        printf("Error generating signature %d\n", ret);
-#endif
         return OQS_ERROR;
     }
 
@@ -95,7 +79,7 @@ int crypto_sign(unsigned char *sm, unsigned long long *smlen,
  *
  * Description: Verify signed message.
  *
- * Arguments:   
+ * Arguments:
  *              - uint8_t *m: pointer to output message (allocated
  *                            array with smlen bytes), can be equal to sm
  *              - uint64_t *mlen: pointer to output length of message
@@ -110,9 +94,6 @@ int crypto_sign_open(unsigned char *m, unsigned long long *mlen,
 {
     if (XMSS_SIGN_OPEN(m, mlen, sm, smlen, pk))
     {
-#if DEBUG
-        printf("Error verifying signature %d\n", ret);
-#endif
         return OQS_ERROR;
     }
 
@@ -133,9 +114,6 @@ int crypto_remaining_signatures(unsigned long long *remain, const unsigned char 
 {
     if (XMSS_REMAINING_SIG(remain, sk))
     {
-#if DEBUG
-        printf("Error counting remaining signatures\n");
-#endif
         return OQS_ERROR;
     }
     return OQS_SUCCESS;

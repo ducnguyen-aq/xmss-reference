@@ -5,6 +5,7 @@
 =============================================================================*/
 #include <oqs/common.h>
 #include <oqs/rand.h>
+#include "randombytes.h"
 
 int runonce(void)
 {

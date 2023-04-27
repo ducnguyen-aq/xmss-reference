@@ -1,11 +1,9 @@
-#include "api.h"
-#include "nist_params.h"
+#include "../sign.h"
+#include "../sign_params.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "xmss.h"
-#include "params.h"
 
 #define XMSS_SIGNATURES 64
 

@@ -2,6 +2,7 @@
 #define API_H
 
 #include <stdint.h>
+#include "namespace.h"
 /*************************************************
  * Name:        XMSS_crypto_sign_keypair
  *
@@ -14,6 +15,7 @@
  *
  * Returns 0 (success), -1 otherwise
  **************************************************/
+#define crypto_sign_keypair XMSS_NAMESPACE(crypto_sign_keypair)
 int crypto_sign_keypair(unsigned char *pk, unsigned char *sk);
 
 /*************************************************
@@ -29,6 +31,7 @@ int crypto_sign_keypair(unsigned char *pk, unsigned char *sk);
  *
  * Returns 0 (success), -1 otherwise
  **************************************************/
+#define crypto_sign XMSS_NAMESPACE(crypto_sign)
 int crypto_sign(unsigned char *sm, unsigned long long *smlen,
                 const unsigned char *m, unsigned long long mlen, unsigned char *sk);
 
@@ -47,6 +50,7 @@ int crypto_sign(unsigned char *sm, unsigned long long *smlen,
  *
  * Returns 0 if signed message could be verified correctly and -1 otherwise
  **************************************************/
+#define crypto_sign_open XMSS_NAMESPACE(crypto_sign_open)
 int crypto_sign_open(unsigned char *m, unsigned long long *mlen,
                      const unsigned char *sm, unsigned long long smlen, const unsigned char *pk);
 
@@ -60,6 +64,7 @@ int crypto_sign_open(unsigned char *m, unsigned long long *mlen,
  *
  * Returns 0 (sucess), -1 otherwise
  **************************************************/
+#define crypto_remaining_signatures XMSS_NAMESPACE(crypto_remaining_signatures)
 int crypto_remaining_signatures(unsigned long long *remain, const unsigned char *sk);
 
 #endif 
