@@ -49,8 +49,8 @@ test: $(TESTS:=.exec)
 test/%.exec: test/%
 	@$<
 
-test/sign_test: sign.c sign_params.h sign.h sign_test.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
-	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) sign_test.c $< $(LDLIBS)
+test/sign_test: sign.c sign_params.h sign.h test/sign_test.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
+	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_test.c $< $(LDLIBS)
 
 test/xmss_fast: test/xmss.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) -DXMSS_SIGNATURES=1024 $(CFLAGS) -o $@ $(SOURCES_FAST) $< $(LDLIBS)
