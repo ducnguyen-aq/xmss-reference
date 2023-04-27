@@ -6,9 +6,9 @@
 #include <oqs/common.h>
 #include <stdio.h>
 
-#include "api.h"
+#include "sign.h"
 #include "params.h"
-#include "nist_params.h"
+#include "sign_params.h"
 #include "xmss.h"
 
 /*************************************************
