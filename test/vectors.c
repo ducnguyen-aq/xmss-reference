@@ -9,7 +9,6 @@
 #include "../wots.h"
 #include "../randombytes.h"
 #include "../params.h"
-#include "../fips202.h"
 #include "../utils.h"
 #include "../xmss_commons.h"
 #include "../xmss_core.h"
