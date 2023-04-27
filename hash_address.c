@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "hash_address.h"
 
 void set_layer_addr(uint32_t addr[8], uint32_t layer)
 {

@@ -2,6 +2,7 @@
 #define XMSS_PARAMS_H
 
 #include <stdint.h>
+#include "namespace.h"
 
 /* These are merely internal identifiers for the supported hash functions. */
 #define XMSS_SHA2 0
@@ -37,6 +38,7 @@ typedef struct {
  *  and outputs OIDs such as 0x01000001.
  * Returns -1 when the parameter set is not found, 0 otherwise
  */
+#define xmss_str_to_oid XMSS_NAMESPACE(xmss_str_to_oid)
 int xmss_str_to_oid(uint32_t *oid, const char *s);
 
 /**
@@ -44,18 +46,21 @@ int xmss_str_to_oid(uint32_t *oid, const char *s);
  *  and outputs OIDs such as 0x01000001.
  * Returns -1 when the parameter set is not found, 0 otherwise
  */
+#define xmssmt_str_to_oid XMSS_NAMESPACE(xmssmt_str_to_oid)
 int xmssmt_str_to_oid(uint32_t *oid, const char *s);
 
 /**
  * Accepts OIDs such as 0x01000001, and configures params accordingly.
  * Returns -1 when the OID is not found, 0 otherwise.
  */
+#define xmss_parse_oid XMSS_NAMESPACE(xmss_parse_oid)
 int xmss_parse_oid(xmss_params *params, const uint32_t oid);
 
 /**
  * Accepts OIDs such as 0x01000001, and configures params accordingly.
  * Returns -1 when the OID is not found, 0 otherwise.
  */
+#define xmssmt_parse_oid XMSS_NAMESPACE(xmssmt_parse_oid)
 int xmssmt_parse_oid(xmss_params *params, const uint32_t oid);
 
 
@@ -67,6 +72,7 @@ int xmssmt_parse_oid(xmss_params *params, const uint32_t oid);
     - wots_w; the Winternitz parameter
     - optionally, bds_k; the BDS traversal trade-off parameter,
     this function initializes the remainder of the params structure. */
+#define xmss_xmssmt_initialize_params XMSS_NAMESPACE(xmss_xmssmt_initialize_params)
 int xmss_xmssmt_initialize_params(xmss_params *params);
 
 #endif

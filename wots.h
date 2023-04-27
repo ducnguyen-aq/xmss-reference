@@ -12,6 +12,7 @@
  *
  * Writes the computed public key to 'pk'.
  */
+#define wots_pkgen XMSS_INNER_NAMESPACE(wots_pkgen)
 void wots_pkgen(const xmss_params *params,
                 unsigned char *pk, const unsigned char *seed,
                 const unsigned char *pub_seed, uint32_t addr[8]);
@@ -20,6 +21,7 @@ void wots_pkgen(const xmss_params *params,
  * Takes a n-byte message and the 32-byte seed for the private key to compute a
  * signature that is placed at 'sig'.
  */
+#define wots_sign XMSS_INNER_NAMESPACE(wots_sign)
 void wots_sign(const xmss_params *params,
                unsigned char *sig, const unsigned char *msg,
                const unsigned char *seed, const unsigned char *pub_seed,
@@ -30,6 +32,7 @@ void wots_sign(const xmss_params *params,
  *
  * Writes the computed public key to 'pk'.
  */
+#define wots_pk_from_sig XMSS_INNER_NAMESPACE(wots_pk_from_sig)
 void wots_pk_from_sig(const xmss_params *params, unsigned char *pk,
                       const unsigned char *sig, const unsigned char *msg,
                       const unsigned char *pub_seed, uint32_t addr[8]);

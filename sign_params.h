@@ -2,7 +2,7 @@
 #define NIST_PARAM_H
 
 #include "params.h"
-
+#include "xmss.h"
 
 #ifndef TREE_LEVEL
 #define TREE_LEVEL 0
