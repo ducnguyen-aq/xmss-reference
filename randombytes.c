@@ -1,6 +1,6 @@
 /*=============================================================================
  * Copyright (c) 2022 by SandboxAQ Inc
- * Author: Duc Tri Nguyen
+ * Author: Duc Tri Nguyen (ductri.nguyen@sandboxaq.com)
  * SPDX-License-Identifier: MIT
 =============================================================================*/
 #include <oqs/common.h>
