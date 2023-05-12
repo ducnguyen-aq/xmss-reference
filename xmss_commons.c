@@ -118,7 +118,7 @@ void gen_leaf_wots(const xmss_params *params, unsigned char *leaf,
  * Note that this assumes a pk without an OID, i.e. [root || PUB_SEED]
  */
 int xmss_core_sign_open(const xmss_params *params,
-                        unsigned char *m, unsigned long long *mlen,
+                        const unsigned char *m, unsigned long long mlen,
                         const unsigned char *sm, unsigned long long smlen,
                         const unsigned char *pk)
 {
@@ -134,7 +134,7 @@ int xmss_core_sign_open(const xmss_params *params,
  * Note that this assumes a pk without an OID, i.e. [root || PUB_SEED]
  */
 int xmssmt_core_sign_open(const xmss_params *params,
-                          unsigned char *m, unsigned long long *mlen,
+                          const unsigned char *m, unsigned long long mlen,
                           const unsigned char *sm, unsigned long long smlen,
                           const unsigned char *pk)
 {
@@ -156,19 +156,22 @@ int xmssmt_core_sign_open(const xmss_params *params,
     set_type(ltree_addr, XMSS_ADDR_TYPE_LTREE);
     set_type(node_addr, XMSS_ADDR_TYPE_HASHTREE);
 
-    *mlen = smlen - params->sig_bytes;
+    // if (smlen != params->sig_bytes)
+    // {
+    //     return -1;
+    // }
 
     /* Convert the index bytes from the signature to an integer. */
     idx = bytes_to_ull(sm, params->index_bytes);
 
     /* Put the message all the way at the end of the m buffer, so that we can
      * prepend the required other inputs for the hash function. */
-    memcpy(m + params->sig_bytes, sm + params->sig_bytes, *mlen);
+    memcpy(m + params->sig_bytes, sm + params->sig_bytes, mlen);
 
     /* Compute the message hash. */
     hash_message(params, mhash, sm + params->index_bytes, pk, idx,
                  m + params->sig_bytes - params->padding_len - 3*params->n,
-                 *mlen);
+                 mlen);
     sm += params->index_bytes + params->n;
 
     /* For each subtree.. */
@@ -202,14 +205,11 @@ int xmssmt_core_sign_open(const xmss_params *params,
 
     /* Check if the root node equals the root node in the public key. */
     if (memcmp(root, pub_root, params->n)) {
-        /* If not, zero the message */
-        memset(m, 0, *mlen);
-        *mlen = 0;
+        /* If not, return fail */
         return -1;
     }
 
     /* If verification was successful, copy the message from the signature. */
-    memcpy(m, sm, *mlen);
 
     return 0;
 }

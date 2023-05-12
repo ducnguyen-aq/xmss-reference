@@ -87,7 +87,7 @@ int xmss_sign(unsigned char *sk,
  * @return The function `xmss_sign_open` returns an integer value. If the function is successful, it
  * returns 0. If there is an error, it returns -1.
  */
-int xmss_sign_open(unsigned char *m, unsigned long long *mlen,
+int xmss_sign_open(const unsigned char *m, unsigned long long mlen,
                    const unsigned char *sm, unsigned long long smlen,
                    const unsigned char *pk)
 {
@@ -171,7 +171,7 @@ int xmssmt_sign(unsigned char *sk,
     return xmssmt_core_sign(&params, sk + XMSS_OID_LEN, sm, smlen, m, mlen);
 }
 
-int xmssmt_sign_open(unsigned char *m, unsigned long long *mlen,
+int xmssmt_sign_open(const unsigned char *m, unsigned long long mlen,
                      const unsigned char *sm, unsigned long long smlen,
                      const unsigned char *pk)
 {

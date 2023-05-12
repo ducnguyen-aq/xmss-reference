@@ -38,7 +38,7 @@ int xmss_core_sign(const xmss_params *params,
  */
 #define xmss_core_sign_open XMSS_INNER_NAMESPACE(xmss_core_sign_open)
 int xmss_core_sign_open(const xmss_params *params,
-                        unsigned char *m, unsigned long long *mlen,
+                        const unsigned char *m, unsigned long long mlen,
                         const unsigned char *sm, unsigned long long smlen,
                         const unsigned char *pk);
 
@@ -78,7 +78,7 @@ int xmssmt_core_sign(const xmss_params *params,
  */
 #define xmssmt_core_sign_open XMSS_INNER_NAMESPACE(xmssmt_core_sign_open)
 int xmssmt_core_sign_open(const xmss_params *params,
-                          unsigned char *m, unsigned long long *mlen,
+                          const unsigned char *m, unsigned long long mlen,
                           const unsigned char *sm, unsigned long long smlen,
                           const unsigned char *pk);
 
