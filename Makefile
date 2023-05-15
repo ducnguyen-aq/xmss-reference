@@ -1,10 +1,10 @@
 CC = clang
 
-LIBOQS = -L/opt/homebrew/opt/liboqs/lib -I/opt/homebrew/opt/liboqs/include
-OPENSSL = -L/opt/homebrew/opt/openssl@1.1/lib -I/opt/homebrew/opt/openssl@1.1/include
+LIBOQS = -L/home/ubuntu/openssl/oqs/lib -I/home/ubuntu/openssl/oqs/include/
+OPENSSL = -L/home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib -I/home/linuxbrew/.linuxbrew/opt/openssl@1.1/include
 
-CFLAGS = -Wall -g -O3 -Wextra -Wpedantic #-fsanitize-address-use-after-return=always -fsanitize=address
-LDLIBS = -lcrypto -loqs $(LIBOQS) $(OPENSSL) 
+CFLAGS = -Wall -O3 -Wextra -Wpedantic #-fsanitize-address-use-after-return=always -fsanitize=address
+LDLIBS =  $(LIBOQS) $(OPENSSL) -lcrypto -loqs
 
 SOURCES = params.c hash.c hash_address.c randombytes.c wots.c xmss.c xmss_core.c xmss_commons.c utils.c
 HEADERS = params.h hash.h hash_address.h randombytes.h wots.h xmss.h xmss_core.h xmss_commons.h utils.h
@@ -50,7 +50,12 @@ test/%.exec: test/%
 	@$<
 
 test/sign_test: sign.c sign_params.h sign.h test/sign_test.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
-	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_test.c $< $(LDLIBS)
+	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_test.c -DDEBUG $< $(LDLIBS)
+	./$@ 
+
+test/sign_test_slow: sign.c sign_params.h sign.h test/sign_test.c $(SOURCES) $(OBJS) $(HEADERS)
+	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_test.c  -DDEBUG -DXMSS_SECRETKEYBYTES_SMALL_ENABLE $< $(LDLIBS)
+	./$@ 
 
 test/xmss_fast: test/xmss.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) -DXMSS_SIGNATURES=1024 $(CFLAGS) -o $@ $(SOURCES_FAST) $< $(LDLIBS)

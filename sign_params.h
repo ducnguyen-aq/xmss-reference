@@ -9,7 +9,7 @@
 #endif
 
 #ifndef XMSSMT
-#define XMSSMT 0
+#define XMSSMT 1
 #endif
 
 #if XMSSMT == 0
@@ -111,22 +111,22 @@
 #endif
 
 #if XMSSMT == 1
-    #define XMSS_PARSE_OID XMSS_NAMESPACE(xmssmt_parse_oid)
-    #define XMSS_STR_TO_OID XMSS_NAMESPACE(xmssmt_str_to_oid)
-    #define XMSS_KEYPAIR XMSS_NAMESPACE(xmssmt_keypair)
-    #define XMSS_SIGN XMSS_NAMESPACE(xmssmt_sign)
-    #define XMSS_SIGN_OPEN XMSS_NAMESPACE(xmssmt_sign_open)
-    #define XMSS_REMAINING_SIG XMSS_NAMESPACE(xmssmt_remaining_signatures)
+    #define XMSS_PARSE_OID xmssmt_parse_oid
+    #define XMSS_STR_TO_OID xmssmt_str_to_oid
+    #define XMSS_KEYPAIR xmssmt_keypair
+    #define XMSS_SIGN xmssmt_sign
+    #define XMSS_SIGN_OPEN xmssmt_sign_open
+    #define XMSS_REMAINING_SIG xmssmt_remaining_signatures
 #else
-    #define XMSS_PARSE_OID XMSS_NAMESPACE(xmss_parse_oid)
-    #define XMSS_STR_TO_OID XMSS_NAMESPACE(xmss_str_to_oid)
-    #define XMSS_KEYPAIR XMSS_NAMESPACE(xmss_keypair)
-    #define XMSS_SIGN XMSS_NAMESPACE(xmss_sign)
-    #define XMSS_SIGN_OPEN XMSS_NAMESPACE(xmss_sign_open)
-    #define XMSS_REMAINING_SIG XMSS_NAMESPACE(xmss_remaining_signatures)
+    #define XMSS_PARSE_OID xmss_parse_oid
+    #define XMSS_STR_TO_OID xmss_str_to_oid
+    #define XMSS_KEYPAIR xmss_keypair
+    #define XMSS_SIGN xmss_sign
+    #define XMSS_SIGN_OPEN xmss_sign_open
+    #define XMSS_REMAINING_SIG xmss_remaining_signatures
 #endif
 
-#if XMSS_SECRETKEYBYTES_SMALL_ENABLE == 1
+#if XMSS_SECRETKEYBYTES_SMALL_ENABLE
 #define CRYPTO_SECRET_KEY (XMSS_SECRETKEYBYTES_SMALL + XMSS_OID_LEN)
 #else
 #define CRYPTO_SECRET_KEY (XMSS_SECRETKEYBYTES + XMSS_OID_LEN)

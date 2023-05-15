@@ -10,7 +10,7 @@
 int runonce(void)
 {
     unsigned char buf[48] = {0};
-    OQS_randombytes(buf, 48);
+    // OQS_randombytes(buf, 48);
 
     /* Using AES as random generator */
     if (OQS_randombytes_switch_algorithm("NIST-KAT") != OQS_SUCCESS)

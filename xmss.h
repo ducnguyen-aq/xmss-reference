@@ -31,7 +31,7 @@ int xmss_sign(unsigned char *sk,
  * which has the form [signature || message].
  */
 #define xmss_sign_open XMSS_NAMESPACE(xmss_sign_open)
-int xmss_sign_open(unsigned char *m, unsigned long long *mlen,
+int xmss_sign_open(const unsigned char *m, unsigned long long mlen,
                    const unsigned char *sm, unsigned long long smlen,
                    const unsigned char *pk);
 
@@ -69,7 +69,7 @@ int xmssmt_sign(unsigned char *sk,
  * which has the form [signature || message].
  */
 #define xmssmt_sign_open XMSS_NAMESPACE(xmssmt_sign_open)
-int xmssmt_sign_open(unsigned char *m, unsigned long long *mlen,
+int xmssmt_sign_open(const unsigned char *m, unsigned long long mlen,
                      const unsigned char *sm, unsigned long long smlen,
                      const unsigned char *pk);
 
