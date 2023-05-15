@@ -22,7 +22,8 @@ TESTS = test/wots \
 		test/xmssmt_fast \
 		test/maxsigsxmss \
 		test/maxsigsxmssmt \
-		test/sign_test
+		test/sign_test \
+		test/sign_test_slow
 
 UI = ui/xmss_keypair \
 	 ui/xmss_sign \
