@@ -1,5 +1,4 @@
-#include <oqs/sha2.h>
-#include <string.h>
+#include <oqs/sha3.h>
 #include "hash.h"
 
 int core_hash(const xmss_params *params,
@@ -7,8 +6,6 @@ int core_hash(const xmss_params *params,
               const unsigned char *in, unsigned long long inlen)
 {
     (void)params;
-    unsigned char buf[32];
-    OQS_SHA2_sha256(buf, in, inlen);
-    memcpy(out, buf, 24);
+    OQS_SHA3_shake256(out, 32, in, inlen);
     return 0;
 }
