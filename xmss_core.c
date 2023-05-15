@@ -190,6 +190,9 @@ int xmssmt_core_sign(const xmss_params *params,
     const unsigned char *pub_root = sk + params->index_bytes + 2*params->n;
     const unsigned char *pub_seed = sk + params->index_bytes + 3*params->n;
 
+    unsigned long long prefix_length = params->padding_len + 3*params->n;
+    unsigned char m_with_prefix[mlen + prefix_length];
+
     unsigned char root[params->n];
     unsigned char *mhash = root;
     unsigned long long idx;
@@ -202,12 +205,6 @@ int xmssmt_core_sign(const xmss_params *params,
 
     /* Already put the message in the right place, to make it easier to prepend
      * things when computing the hash over the message. */
-    // memcpy(sm + params->sig_bytes, m, mlen);
-    // *smlen = params->sig_bytes + mlen;
-
-
-    unsigned char m_with_prefix[mlen + params->padding_len + 3*params->n];
-    unsigned long long prefix_length = params->padding_len + 3*params->n;
     memcpy(m_with_prefix, sm + params->sig_bytes - prefix_length, prefix_length);
     memcpy(m_with_prefix + prefix_length, m, mlen);
     *smlen = params->sig_bytes;
@@ -249,34 +246,12 @@ int xmssmt_core_sign(const xmss_params *params,
     ull_to_bytes(idx_bytes_32, 32, idx);
     prf(params, sm + params->index_bytes, idx_bytes_32, sk_prf);
 
-    // unsigned char *tmp = sm + params->sig_bytes - params->padding_len - 3*params->n;
-    // printf("input[%d] = ", mlen);
-    // for (int i = 0; i < mlen; i++)
-    // {
-    //     printf("%02x", tmp[i]);
-    // }
-    // printf("\n");
-
-    // printf("m_with_prefix[%d] = ", mlen);
-    // for (int i = 0; i < mlen; i++)
-    // {
-    //     printf("%02x", m_with_prefix[i]);
-    // }
-    // printf("\n");
-
     /* Compute the message hash. */
     hash_message(params, mhash, sm + params->index_bytes, pub_root, idx,
                 //  sm + params->sig_bytes - params->padding_len - 3*params->n,
                 m_with_prefix,
                  mlen);
     sm += params->index_bytes + params->n;
-
-    // printf("mhash = ");
-    // for (int i = 0; i < params->n; i++)
-    // {
-    //     printf("%02x", mhash[i]);
-    // }
-    // printf("\n");
 
     set_type(ots_addr, XMSS_ADDR_TYPE_OTS);
 

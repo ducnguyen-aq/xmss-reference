@@ -143,6 +143,10 @@ int xmssmt_core_sign_open(const xmss_params *params,
     unsigned char wots_pk[params->wots_sig_bytes];
     unsigned char leaf[params->n];
     unsigned char root[params->n];
+
+    unsigned long long prefix_length = params->padding_len + 3*params->n;
+    unsigned char m_with_prefix[mlen + prefix_length];
+    
     unsigned char *mhash = root;
     unsigned long long idx = 0;
     unsigned int i;
@@ -156,24 +160,19 @@ int xmssmt_core_sign_open(const xmss_params *params,
     set_type(ltree_addr, XMSS_ADDR_TYPE_LTREE);
     set_type(node_addr, XMSS_ADDR_TYPE_HASHTREE);
 
+    // Unused since smlen is a constant
     (void) smlen;
-    // *mlen = smlen - params->sig_bytes;
 
     /* Convert the index bytes from the signature to an integer. */
     idx = bytes_to_ull(sm, params->index_bytes);
 
-    /* Put the message all the way at the end of the m buffer, so that we can
+    /* Put the message at the m_with_prefix buffer, so that we can
      * prepend the required other inputs for the hash function. */
-    memcpy(m + params->sig_bytes, sm + params->sig_bytes, mlen);
-
-    unsigned char m_with_prefix[mlen + params->padding_len + 3*params->n];
-    unsigned long long prefix_length = params->padding_len + 3*params->n;
     memcpy(m_with_prefix, sm + params->sig_bytes - prefix_length, prefix_length);
     memcpy(m_with_prefix + prefix_length, m, mlen);
 
     /* Compute the message hash. */
     hash_message(params, mhash, sm + params->index_bytes, pk, idx,
-                //  m + params->sig_bytes - params->padding_len - 3*params->n,
                 m_with_prefix,
                  mlen);
     sm += params->index_bytes + params->n;
@@ -209,14 +208,9 @@ int xmssmt_core_sign_open(const xmss_params *params,
 
     /* Check if the root node equals the root node in the public key. */
     if (memcmp(root, pub_root, params->n)) {
-        /* If not, zero the message */
-        // memset(m, 0, mlen);
-        // mlen = 0;
+        /* If not, return fail */
         return -1;
     }
-
-    /* If verification was successful, copy the message from the signature. */
-    // memcpy(m, sm, mlen);
 
     return 0;
 }
