@@ -28,6 +28,7 @@ static void print_hex(const unsigned char *a, int length, const char *string)
 }
 #endif
 
+#if BENCH
 static int cmp_llu(const void *a, const void *b)
 {
     if (*(unsigned long long *)a < *(unsigned long long *)b)
@@ -57,7 +58,7 @@ static unsigned long long average(unsigned long long *t, size_t tlen)
     return acc / tlen;
 }
 
-#if BENCH
+
 static void print_results(unsigned long long *t, size_t tlen)
 {
     printf("\tmedian        : %llu us\n", median(t, tlen));
