@@ -658,11 +658,14 @@ int xmss_core_sign(const xmss_params *params,
 
     /* Already put the message in the right place, to make it easier to prepend
      * things when computing the hash over the message. */
-    memcpy(sm + params->sig_bytes, m, mlen);
+    unsigned long long prefix_length = params->padding_len + 3*params->n;
+    unsigned char m_with_prefix[mlen + prefix_length];
+    memcpy(m_with_prefix, sm + params->sig_bytes - prefix_length, prefix_length);
+    memcpy(m_with_prefix + prefix_length, m, mlen);
 
     /* Compute the message hash. */
     hash_message(params, msg_h, R, pub_root, idx,
-                 sm + params->sig_bytes - params->padding_len - 3*params->n,
+                 m_with_prefix,
                  mlen);
 
     // Start collecting signature
@@ -709,9 +712,6 @@ int xmss_core_sign(const xmss_params *params,
 
     sm += params->tree_height*params->n;
     *smlen += params->tree_height*params->n;
-
-    memcpy(sm, m, mlen);
-    *smlen += mlen;
 
     /* Write the updated BDS state back into sk. */
     xmss_serialize_state(params, sk, &state);
@@ -867,11 +867,14 @@ int xmssmt_core_sign(const xmss_params *params,
 
     /* Already put the message in the right place, to make it easier to prepend
      * things when computing the hash over the message. */
-    memcpy(sm + params->sig_bytes, m, mlen);
+    unsigned long long prefix_length = params->padding_len + 3*params->n;
+    unsigned char m_with_prefix[mlen + prefix_length];
+    memcpy(m_with_prefix, sm + params->sig_bytes - prefix_length, prefix_length);
+    memcpy(m_with_prefix + prefix_length, m, mlen);
 
     /* Compute the message hash. */
     hash_message(params, msg_h, R, pub_root, idx,
-                 sm + params->sig_bytes - params->padding_len - 3*params->n,
+                m_with_prefix,
                  mlen);
 
     // Start collecting signature
@@ -978,9 +981,6 @@ int xmssmt_core_sign(const xmss_params *params,
             }
         }
     }
-
-    memcpy(sm, m, mlen);
-    *smlen += mlen;
 
     xmssmt_serialize_state(params, sk, states);
 
