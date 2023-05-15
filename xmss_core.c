@@ -248,7 +248,6 @@ int xmssmt_core_sign(const xmss_params *params,
 
     /* Compute the message hash. */
     hash_message(params, mhash, sm + params->index_bytes, pub_root, idx,
-                //  sm + params->sig_bytes - params->padding_len - 3*params->n,
                 m_with_prefix,
                  mlen);
     sm += params->index_bytes + params->n;
