@@ -9,7 +9,7 @@
 #endif
 
 #ifndef XMSSMT
-#define XMSSMT 0
+#define XMSSMT 1
 #endif
 
 #if XMSSMT == 0
@@ -126,7 +126,7 @@
     #define XMSS_REMAINING_SIG xmss_remaining_signatures
 #endif
 
-#if XMSS_SECRETKEYBYTES_SMALL_ENABLE == 1
+#if XMSS_SECRETKEYBYTES_SMALL_ENABLE
 #define CRYPTO_SECRET_KEY (XMSS_SECRETKEYBYTES_SMALL + XMSS_OID_LEN)
 #else
 #define CRYPTO_SECRET_KEY (XMSS_SECRETKEYBYTES + XMSS_OID_LEN)
