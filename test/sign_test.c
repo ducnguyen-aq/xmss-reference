@@ -5,7 +5,7 @@
 #include <time.h>
 #include <string.h>
 
-#define XMSS_SIGNATURES 3
+#define XMSS_SIGNATURES 8
 
 #define CALC(start, stop) ((stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3)
 
@@ -223,6 +223,10 @@ int main(void)
         printf("    Unable to check remaining signature\n");
         return 1;
     }
+
+#if DEBUG
+    print_hex(sk, CRYPTO_SECRET_KEY, "sk_final");
+#endif
 
     return 0;
 }

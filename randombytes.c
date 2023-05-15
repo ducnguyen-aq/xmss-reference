@@ -6,12 +6,21 @@
 #include <oqs/common.h>
 #include <oqs/rand.h>
 #include "randombytes.h"
+#include <stdio.h>
 
 int runonce(void)
 {
     unsigned char buf[48] = {0};
-    // OQS_randombytes(buf, 48);
-
+#if NORANDOM
+    printf("seed = ");
+    for (int i = 0; i < 48; i++)
+    {
+        printf("%02x", buf[i]);
+    }
+    printf("\n");
+#else 
+    OQS_randombytes(buf, 48);
+#endif 
     /* Using AES as random generator */
     if (OQS_randombytes_switch_algorithm("NIST-KAT") != OQS_SUCCESS)
     {

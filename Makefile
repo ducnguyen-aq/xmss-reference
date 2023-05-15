@@ -51,11 +51,9 @@ test/%.exec: test/%
 
 test/sign_test: sign.c sign_params.h sign.h test/sign_test.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_test.c -DDEBUG $< $(LDLIBS)
-	./$@ 
 
 test/sign_test_slow: sign.c sign_params.h sign.h test/sign_test.c $(SOURCES) $(OBJS) $(HEADERS)
-	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_test.c  -DDEBUG -DXMSS_SECRETKEYBYTES_SMALL_ENABLE $< $(LDLIBS)
-	./$@ 
+	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_test.c  -DDEBUG -DXMSS_SECRETKEYBYTES_SMALL_ENABLE -DNORANDOM $< $(LDLIBS)
 
 test/xmss_fast: test/xmss.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) -DXMSS_SIGNATURES=1024 $(CFLAGS) -o $@ $(SOURCES_FAST) $< $(LDLIBS)
