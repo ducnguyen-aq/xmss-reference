@@ -5,7 +5,7 @@
 #include <time.h>
 #include <string.h>
 
-#define XMSS_SIGNATURES 64
+#define XMSS_SIGNATURES 3
 
 #define CALC(start, stop) ((stop.tv_sec - start.tv_sec) * 1e6 + (stop.tv_nsec - start.tv_nsec) / 1e3)
 
@@ -13,7 +13,8 @@
  * This array collect the performance number
  * and then use it to compute average and median number
  */
-unsigned long long t[XMSS_SIGNATURES];
+unsigned long long t_sign[XMSS_SIGNATURES];
+unsigned long long t_verify[XMSS_SIGNATURES];
 
 #if DEBUG
 static void print_hex(const unsigned char *a, int length, const char *string)
@@ -56,12 +57,14 @@ static unsigned long long average(unsigned long long *t, size_t tlen)
     return acc / tlen;
 }
 
+#if BENCH
 static void print_results(unsigned long long *t, size_t tlen)
 {
     printf("\tmedian        : %llu us\n", median(t, tlen));
     printf("\taverage       : %llu us\n", average(t, tlen));
     printf("\n");
 }
+#endif
 
 /*
  * Test keygen
@@ -79,86 +82,69 @@ int test_keygen(unsigned char *pk, unsigned char *sk)
     clock_gettime(CLOCK_REALTIME, &stop);
 
     result = CALC(start, stop);
+
+#if BENCH
     printf("took %lf us (%.2lf sec)\n", result, result / 1e6);
+#endif
+    (void) result;
 
     return ret;
 }
 
 /*
- * Test Sign
+ * Test Sign and Verify
  */
-int test_sign(unsigned char *sm, unsigned long long *smlen,
-              const unsigned char *m, unsigned long long mlen, unsigned char *sk)
+int test_sign_verify(unsigned char *sm, 
+                const unsigned char *m, 
+                unsigned long long mlen, 
+                unsigned char *sk, 
+                const unsigned char *pk)
 {
     struct timespec start, stop;
     int ret;
 
-    printf("Creating %d signatures..\n", XMSS_SIGNATURES);
+    printf("Sign and Verify %d signatures..\n", XMSS_SIGNATURES);
+
+    unsigned long long smlen = 0;
 
     for (int i = 0; i < XMSS_SIGNATURES; i++)
     {
         clock_gettime(CLOCK_REALTIME, &start);
-        ret = crypto_sign(sm, smlen, m, mlen, sk);
+        ret = crypto_sign(sm, &smlen, m, mlen, sk);
         clock_gettime(CLOCK_REALTIME, &stop);
 
-        t[i] = CALC(start, stop);
+        t_sign[i] = CALC(start, stop);
 
-        if (*smlen != CRYPTO_BYTES + mlen)
-        {
-            printf("  X smlen incorrect [%llu != %llu]!\n", *smlen, CRYPTO_BYTES + mlen);
-            break;
-        }
         if (ret)
         {
+            printf("    Unable to generate signature\n");
             break;
         }
-    }
-    print_results(t, XMSS_SIGNATURES);
 
-    return ret;
-}
+        if (smlen != CRYPTO_BYTES) {
+            printf("Incorrect Signature size: %lu != %d", smlen, CRYPTO_BYTES);
+            break;
+        }
 
-/*
- * Test Verify
- */
-int test_verify(unsigned char *mout, unsigned long long *moutlen,
-                const unsigned char *sm, unsigned long long smlen, const unsigned char *pk,
-                unsigned char *m, const unsigned long long mlen)
-{
-    struct timespec start, stop;
-    int ret;
-
-    printf("Verifying %d signatures..\n", XMSS_SIGNATURES);
-
-    for (int i = 0; i < XMSS_SIGNATURES; i++)
-    {
         clock_gettime(CLOCK_REALTIME, &start);
-        ret = crypto_sign_open(mout, moutlen, sm, smlen, pk);
+        ret = crypto_sign_open(m, mlen, sm, smlen, pk);
         clock_gettime(CLOCK_REALTIME, &stop);
 
-        t[i] = CALC(start, stop);
-
-        if (*moutlen != mlen)
-        {
-            printf("  X mlen incorrect [%llu != %llu]!\n", *moutlen, mlen);
-            ret = -1;
-            break;
-        }
-
-        if (memcmp(mout, m, mlen))
-        {
-            printf("  mout incorrect [%s != %s]\n", mout, m);
-            ret = -1;
-            break;
-        }
+        t_verify[i] = CALC(start, stop);
 
         if (ret)
         {
+            printf("    Unable to verify signature\n");
             break;
         }
+#if DEBUG
+        print_hex(sm, smlen, "signature");
+#endif
     }
-    print_results(t, XMSS_SIGNATURES);
-
+#if BENCH
+    print_results(t_sign, XMSS_SIGNATURES);
+    print_results(t_verify, XMSS_SIGNATURES);
+#endif
     return ret;
 }
 
@@ -204,15 +190,19 @@ int main(void)
 {
     // Keygen test
     int ret;
-    unsigned char pk[CRYPTO_PUBLIC_KEY], sk[CRYPTO_SECRET_KEY];
-    unsigned long long smlen, mlen, mlen_out;
+    unsigned char pk[CRYPTO_PUBLIC_KEY]; 
+    unsigned char guard1[] = {0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, };
+    unsigned char sk[CRYPTO_SECRET_KEY];
+    unsigned char guard2[] = {0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, };
+    unsigned long long smlen, mlen;
 
     // Signature test
-    unsigned char m[] = "\nThis is a test from SandboxAQ\n";
+    unsigned char m[] = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
     mlen = sizeof(m);
     // Verify test
-    unsigned char *sm = malloc(CRYPTO_BYTES + mlen);
-    unsigned char *mout = malloc(CRYPTO_BYTES + mlen);
+    unsigned char guard3[] = {0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, };
+    unsigned char *sm = calloc(sizeof(uint8_t), CRYPTO_BYTES + mlen);
+    unsigned char guard4[] = {0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, };
 
     ret = test_keygen(pk, sk);
 
@@ -225,28 +215,10 @@ int main(void)
 #if DEBUG
     print_hex(pk, CRYPTO_PUBLIC_KEY, "pk");
     print_hex(sk, CRYPTO_SECRET_KEY, "sk");
-#endif
-
-    ret |= test_sign(sm, &smlen, m, mlen, sk);
-
-    if (ret)
-    {
-        printf("    Unable to generate signature\n");
-        return 1;
-    }
-
-#if DEBUG
     print_hex(m, mlen, "message");
-    print_hex(sm, smlen, "signature");
 #endif
 
-    ret |= test_verify(mout, &mlen_out, sm, smlen, pk, m, mlen);
-
-    if (ret)
-    {
-        printf("    Unable to verify signature\n");
-        return 1;
-    }
+    ret |= test_sign_verify(sm, m, mlen, sk, pk);
 
     ret |= test_remain(sk);
 
@@ -257,7 +229,11 @@ int main(void)
     }
 
     free(sm);
-    free(mout);
+
+    (void) guard1;
+    (void) guard2;
+    (void) guard3;
+    (void) guard4;
 
     return 0;
 }

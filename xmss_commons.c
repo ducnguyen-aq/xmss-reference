@@ -156,10 +156,8 @@ int xmssmt_core_sign_open(const xmss_params *params,
     set_type(ltree_addr, XMSS_ADDR_TYPE_LTREE);
     set_type(node_addr, XMSS_ADDR_TYPE_HASHTREE);
 
-    // if (smlen != params->sig_bytes)
-    // {
-    //     return -1;
-    // }
+    (void) smlen;
+    // *mlen = smlen - params->sig_bytes;
 
     /* Convert the index bytes from the signature to an integer. */
     idx = bytes_to_ull(sm, params->index_bytes);
@@ -168,9 +166,15 @@ int xmssmt_core_sign_open(const xmss_params *params,
      * prepend the required other inputs for the hash function. */
     memcpy(m + params->sig_bytes, sm + params->sig_bytes, mlen);
 
+    unsigned char m_with_prefix[mlen + params->padding_len + 3*params->n];
+    unsigned long long prefix_length = params->padding_len + 3*params->n;
+    memcpy(m_with_prefix, sm + params->sig_bytes - prefix_length, prefix_length);
+    memcpy(m_with_prefix + prefix_length, m, mlen);
+
     /* Compute the message hash. */
     hash_message(params, mhash, sm + params->index_bytes, pk, idx,
-                 m + params->sig_bytes - params->padding_len - 3*params->n,
+                //  m + params->sig_bytes - params->padding_len - 3*params->n,
+                m_with_prefix,
                  mlen);
     sm += params->index_bytes + params->n;
 
@@ -205,11 +209,14 @@ int xmssmt_core_sign_open(const xmss_params *params,
 
     /* Check if the root node equals the root node in the public key. */
     if (memcmp(root, pub_root, params->n)) {
-        /* If not, return fail */
+        /* If not, zero the message */
+        // memset(m, 0, mlen);
+        // mlen = 0;
         return -1;
     }
 
     /* If verification was successful, copy the message from the signature. */
+    // memcpy(m, sm, mlen);
 
     return 0;
 }
