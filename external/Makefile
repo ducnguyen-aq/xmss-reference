@@ -6,7 +6,9 @@ OPENSSL = -L/home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib -I/home/linuxbrew/.li
 CFLAGS = -Wall -O3 -Wextra -Wpedantic #-fsanitize-address-use-after-return=always -fsanitize=address
 LDLIBS =  $(LIBOQS) $(OPENSSL) -lcrypto -loqs
 
-SOURCES = params.c hash.c hash_address.c randombytes.c wots.c xmss.c xmss_core.c xmss_commons.c utils.c
+CORES_HASH = core_hash_n32_sha2.c
+
+SOURCES = params.c hash.c hash_address.c randombytes.c wots.c xmss.c xmss_core.c xmss_commons.c utils.c $(CORES_HASH)
 HEADERS = params.h hash.h hash_address.h randombytes.h wots.h xmss.h xmss_core.h xmss_commons.h utils.h
 
 SOURCES_FAST = $(subst xmss_core.c,xmss_core_fast.c,$(SOURCES))
@@ -22,7 +24,8 @@ TESTS = test/wots \
 		test/xmssmt_fast \
 		test/maxsigsxmss \
 		test/maxsigsxmssmt \
-		test/sign_test
+		test/sign_test \
+		test/sign_test_slow
 
 UI = ui/xmss_keypair \
 	 ui/xmss_sign \

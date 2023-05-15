@@ -23,40 +23,6 @@ void addr_to_bytes(unsigned char *bytes, const uint32_t addr[8])
     }
 }
 
-static int core_hash(const xmss_params *params,
-                     unsigned char *out,
-                     const unsigned char *in, unsigned long long inlen)
-{
-    unsigned char buf[32];
-
-    if (params->n == 24 && params->func == XMSS_SHA2) {
-        OQS_SHA2_sha256(buf, in, inlen);
-        memcpy(out, buf, 24);
-    }
-    else if (params->n == 24 && params->func == XMSS_SHAKE256) {
-        OQS_SHA3_shake256(out, 24, in, inlen);
-    }   
-    else if (params->n == 32 && params->func == XMSS_SHA2) {
-        OQS_SHA2_sha256(out, in, inlen);
-    }
-    else if (params->n == 32 && params->func == XMSS_SHAKE128) {
-        OQS_SHA3_shake128(out, 32, in, inlen);
-    }
-    else if (params->n == 32 && params->func == XMSS_SHAKE256) {
-        OQS_SHA3_shake256(out, 32, in, inlen);
-    }
-    else if (params->n == 64 && params->func == XMSS_SHA2) {
-        OQS_SHA2_sha512(out, in, inlen);
-    }
-    else if (params->n == 64 && params->func == XMSS_SHAKE256) {
-        OQS_SHA3_shake256(out, 64, in, inlen);
-    }
-    else {
-        return -1;
-    }
-    return 0;
-}
-
 /*
  * Computes PRF(key, in), for a key of params->n bytes, and a 32-byte input.
  */
