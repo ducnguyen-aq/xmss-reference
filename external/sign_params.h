@@ -9,7 +9,7 @@
 #endif
 
 #ifndef XMSSMT
-#define XMSSMT 1
+#define XMSSMT 0
 #endif
 
 #if XMSSMT == 0
