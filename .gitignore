@@ -1,5 +1,5 @@
-test/*
+external/test/*
 !test/*.c
-ui/*
+external/ui/*
 !ui/*.c
 .vscode/
