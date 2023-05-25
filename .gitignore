@@ -3,5 +3,5 @@ external/test/*
 external/ui/*
 !external/ui/*.c
 .vscode/
-*.req
-*.rsp
+external/*.req
+external/*.rsp
