@@ -142,8 +142,8 @@ int test_remain(unsigned char *sk) {
 
 int main(void) {
 
-	unsigned char pk[CRYPTO_PUBLIC_KEY];
-	unsigned char sk[CRYPTO_SECRET_KEY];
+	unsigned char pk[CRYPTO_PUBLICKEYBYTES];
+	unsigned char sk[CRYPTO_SECRETKEYBYTES];
 	unsigned char sm[CRYPTO_BYTES];
 	unsigned char m[64];
 	const unsigned long long mlen = sizeof(m);

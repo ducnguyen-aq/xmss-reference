@@ -32,8 +32,8 @@ main() {
 	uint8_t             seed[48];
 	uint8_t             msg[3300];
 	uint8_t             entropy_input[48];
-	uint8_t             *m, *sm, *m1;
-	size_t              mlen, smlen, mlen1;
+	uint8_t             *m, *sm;
+	unsigned long long  mlen, smlen, max, remain;
 	int                 count;
 	int                 done;
 	uint8_t             pk[CRYPTO_PUBLICKEYBYTES], sk[CRYPTO_SECRETKEYBYTES];
@@ -59,18 +59,28 @@ main() {
 		return KAT_CRYPTO_FAILURE;
 	}
 
-    fprintf(fp_req, "pk =\n");
-    fprintf(fp_req, "sk =\n");
-	for (int i = 0; i < 100; i++) {
+	// Generate the public/private keypair
+	if ( (ret_val = crypto_sign_keypair(pk, sk)) != 0) {
+		printf("crypto_sign_keypair returned <%d>\n", ret_val);
+		return KAT_CRYPTO_FAILURE;
+	}
+	fprintBstr(fp_req, "pk = ", pk, CRYPTO_PUBLICKEYBYTES);
+	fprintBstr(fp_req, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
+	fprintf(fp_req, "\n\n");
+
+	for (int i = 0; i < 32; i++) {
 		fprintf(fp_req, "count = %d\n", i);
 		randombytes(seed, 48);
 		fprintBstr(fp_req, "seed = ", seed, 48);
 		mlen = 33 * (i + 1);
-		fprintf(fp_req, "mlen = %lu\n", mlen);
+		fprintf(fp_req, "mlen = %llu\n", mlen);
 		randombytes(msg, mlen);
 		fprintBstr(fp_req, "msg = ", msg, mlen);
 		fprintf(fp_req, "smlen =\n");
-		fprintf(fp_req, "sm =\n\n");
+		fprintf(fp_req, "sm =\n");
+        fprintf(fp_req, "sk =\n");
+        fprintf(fp_req, "remain =\n");
+		fprintf(fp_req, "max =\n\n");
 	}
 	fclose(fp_req);
 
@@ -82,16 +92,17 @@ main() {
 
 	fprintf(fp_rsp, "# %s\n\n", CRYPTO_ALGNAME);
 
+	// Grab the pk and sk input
+	if (!ReadHex(fp_req, pk, CRYPTO_PUBLICKEYBYTES, "pk = ")) {
+		printf("ERROR: unable to read 'pk' from <%s>\n", fn_req);
+		return KAT_DATA_ERROR;
+	}
+	if (!ReadHex(fp_req, sk, CRYPTO_SECRETKEYBYTES, "sk = ")) {
+		printf("ERROR: unable to read 'sk' from <%s>\n", fn_req);
+		return KAT_DATA_ERROR;
+	}
+
 	done = 0;
-
-    // Grab the pk and sk input
-    if ( FindMarker(fp_req, "count = ") ) {
-			fscanf(fp_req, "%d", &count);
-    } else {
-        done = 1;
-    }
-
-
 	do {
 		if ( FindMarker(fp_req, "count = ") ) {
 			fscanf(fp_req, "%d", &count);
@@ -107,19 +118,18 @@ main() {
 		}
 		fprintBstr(fp_rsp, "seed = ", seed, 48);
 
-		randombytes_init(seed, NULL, 256);
+		randombytes_init(seed);
 
 		if ( FindMarker(fp_req, "mlen = ") ) {
-			fscanf(fp_req, "%lu", &mlen);
+			fscanf(fp_req, "%llu", &mlen);
 		} else {
 			printf("ERROR: unable to read 'mlen' from <%s>\n", fn_req);
 			return KAT_DATA_ERROR;
 		}
-		fprintf(fp_rsp, "mlen = %lu\n", mlen);
+		fprintf(fp_rsp, "mlen = %llu\n", mlen);
 
 		m = (uint8_t *)calloc(mlen, sizeof(uint8_t));
-		m1 = (uint8_t *)calloc(mlen + CRYPTO_BYTES, sizeof(uint8_t));
-		sm = (uint8_t *)calloc(mlen + CRYPTO_BYTES, sizeof(uint8_t));
+		sm = (uint8_t *)calloc(CRYPTO_BYTES, sizeof(uint8_t));
 
 		if ( !ReadHex(fp_req, m, (int)mlen, "msg = ") ) {
 			printf("ERROR: unable to read 'msg' from <%s>\n", fn_req);
@@ -127,39 +137,40 @@ main() {
 		}
 		fprintBstr(fp_rsp, "msg = ", m, mlen);
 
-		// Generate the public/private keypair
-		if ( (ret_val = crypto_sign_keypair(pk, sk)) != 0) {
-			printf("crypto_sign_keypair returned <%d>\n", ret_val);
-			return KAT_CRYPTO_FAILURE;
-		}
-		fprintBstr(fp_rsp, "pk = ", pk, CRYPTO_PUBLICKEYBYTES);
-		fprintBstr(fp_rsp, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
-
 		if ( (ret_val = crypto_sign(sm, &smlen, m, mlen, sk)) != 0) {
 			printf("crypto_sign returned <%d>\n", ret_val);
 			return KAT_CRYPTO_FAILURE;
 		}
-		fprintf(fp_rsp, "smlen = %lu\n", smlen);
+		fprintf(fp_rsp, "smlen = %llu\n", smlen);
 		fprintBstr(fp_rsp, "sm = ", sm, smlen);
-		fprintf(fp_rsp, "\n");
+        fprintBstr(fp_rsp, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
 
-		if ( (ret_val = crypto_sign_open(m1, &mlen1, sm, smlen, pk)) != 0) {
+		if ( (ret_val = crypto_sign_open(m, mlen, sm, smlen, pk)) != 0) {
 			printf("crypto_sign_open returned <%d>\n", ret_val);
 			return KAT_CRYPTO_FAILURE;
 		}
 
-		if ( mlen != mlen1 ) {
-			printf("crypto_sign_open returned bad 'mlen': Got <%lu>, expected <%lu>\n", mlen1, mlen);
+        if ( (ret_val = crypto_remaining_signatures(&remain ,sk)) != 0) {
+			printf("crypto_remaining_signatures returned <%d>\n", ret_val);
 			return KAT_CRYPTO_FAILURE;
 		}
 
-		if ( memcmp(m, m1, mlen) ) {
-			printf("crypto_sign_open returned bad 'm' value\n");
+        fprintf(fp_rsp, "remain = %llu\n", remain);
+
+        if ( (ret_val = crypto_total_signatures(&max ,sk)) != 0) {
+			printf("crypto_total_signatures returned <%d>\n", ret_val);
 			return KAT_CRYPTO_FAILURE;
 		}
+
+        fprintf(fp_rsp, "max = %llu\n\n", max);
+
+        if (max - remain != (unsigned long long) count + 1)
+        {
+            printf("secret key update failed\n");
+            return KAT_CRYPTO_FAILURE;
+        }
 
 		free(m);
-		free(m1);
 		free(sm);
 
 	} while ( !done );

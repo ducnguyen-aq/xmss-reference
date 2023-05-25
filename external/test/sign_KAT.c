@@ -82,8 +82,8 @@ int test_remain(unsigned char *sk) {
 }
 
 int main(void) {
-	unsigned char pk[CRYPTO_PUBLIC_KEY];
-	unsigned char sk[CRYPTO_SECRET_KEY];
+	unsigned char pk[CRYPTO_PUBLICKEYBYTES];
+	unsigned char sk[CRYPTO_SECRETKEYBYTES];
 	unsigned char sm[CRYPTO_BYTES];
 	unsigned char m[64];
 	unsigned char buf[48];
@@ -108,15 +108,15 @@ int main(void) {
 		return 1;
 	}
 
-	print_hex(pk, CRYPTO_PUBLIC_KEY, "pk");
-	print_hex(sk, CRYPTO_SECRET_KEY, "sk");
+	print_hex(pk, CRYPTO_PUBLICKEYBYTES, "pk");
+	print_hex(sk, CRYPTO_SECRETKEYBYTES, "sk");
 	print_hex(m, mlen, "m");
 
 	if (test_sign_verify(sm, m, mlen, sk, pk)) {
 		return 1;
 	}
 
-	print_hex(sk, CRYPTO_SECRET_KEY, "sk_final");
+	print_hex(sk, CRYPTO_SECRETKEYBYTES, "sk_final");
 
 	if (test_remain(sk)) {
 		printf("    Unable to check remaining signature\n");
