@@ -158,7 +158,7 @@ int test_sign_verify(unsigned char *sm,
  */
 int test_remain(unsigned char *sk)
 {
-    unsigned long long remain = 0, max;
+    unsigned long long remain, max;
     int ret;
 
     ret = crypto_remaining_signatures(&remain, sk);
