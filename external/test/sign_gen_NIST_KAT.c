@@ -78,9 +78,9 @@ main() {
 		fprintBstr(fp_req, "msg = ", msg, mlen);
 		fprintf(fp_req, "smlen =\n");
 		fprintf(fp_req, "sm =\n");
-        fprintf(fp_req, "sklen =\n");
-        fprintf(fp_req, "sk =\n");
-        fprintf(fp_req, "remain =\n");
+		fprintf(fp_req, "sklen =\n");
+		fprintf(fp_req, "sk =\n");
+		fprintf(fp_req, "remain =\n");
 		fprintf(fp_req, "max =\n\n");
 	}
 	fclose(fp_req);
@@ -102,6 +102,11 @@ main() {
 		printf("ERROR: unable to read 'sk' from <%s>\n", fn_req);
 		return KAT_DATA_ERROR;
 	}
+
+	// Write pk and sk down to output
+	fprintBstr(fp_rsp, "pk = ", pk, CRYPTO_PUBLICKEYBYTES);
+	fprintBstr(fp_rsp, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
+	fprintf(fp_rsp, "\n\n");
 
 	done = 0;
 	do {
@@ -144,33 +149,32 @@ main() {
 		}
 		fprintf(fp_rsp, "smlen = %llu\n", smlen);
 		fprintBstr(fp_rsp, "sm = ", sm, smlen);
-        fprintf(fp_rsp, "sklen = %u\n", CRYPTO_SECRETKEYBYTES);
-        fprintBstr(fp_rsp, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
+		fprintf(fp_rsp, "sklen = %u\n", CRYPTO_SECRETKEYBYTES);
+		fprintBstr(fp_rsp, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
 
 		if ( (ret_val = crypto_sign_open(m, mlen, sm, smlen, pk)) != 0) {
 			printf("crypto_sign_open returned <%d>\n", ret_val);
 			return KAT_CRYPTO_FAILURE;
 		}
 
-        if ( (ret_val = crypto_remaining_signatures(&remain ,sk)) != 0) {
+		if ( (ret_val = crypto_remaining_signatures(&remain, sk)) != 0) {
 			printf("crypto_remaining_signatures returned <%d>\n", ret_val);
 			return KAT_CRYPTO_FAILURE;
 		}
 
-        fprintf(fp_rsp, "remain = %llu\n", remain);
+		fprintf(fp_rsp, "remain = %llu\n", remain);
 
-        if ( (ret_val = crypto_total_signatures(&max ,sk)) != 0) {
+		if ( (ret_val = crypto_total_signatures(&max, sk)) != 0) {
 			printf("crypto_total_signatures returned <%d>\n", ret_val);
 			return KAT_CRYPTO_FAILURE;
 		}
 
-        fprintf(fp_rsp, "max = %llu\n\n", max);
+		fprintf(fp_rsp, "max = %llu\n\n", max);
 
-        if (max - remain != (unsigned long long) count + 1)
-        {
-            printf("secret key update failed\n");
-            return KAT_CRYPTO_FAILURE;
-        }
+		if (max - remain != (unsigned long long) count + 1) {
+			printf("secret key update failed\n");
+			return KAT_CRYPTO_FAILURE;
+		}
 
 		free(m);
 		free(sm);
