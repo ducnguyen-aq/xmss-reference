@@ -110,9 +110,9 @@ int bench_sign_verify(unsigned char *sm,
 			return 1;
 		}
 	}
-	printf("Sign: ");
+	printf("Sign:");
 	print_results(t_sign, XMSS_SIGNATURES);
-	printf("Verify: ");
+	printf("Verify:");
 	print_results(t_verify, XMSS_SIGNATURES);
 
 	return 0;
