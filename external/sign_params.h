@@ -117,6 +117,7 @@
     #define XMSS_SIGN xmssmt_sign
     #define XMSS_SIGN_OPEN xmssmt_sign_open
     #define XMSS_REMAINING_SIG xmssmt_remaining_signatures
+    #define XMSS_TOTAL_SIG xmssmt_total_signatures
 #else
     #define XMSS_PARSE_OID xmss_parse_oid
     #define XMSS_STR_TO_OID xmss_str_to_oid
@@ -124,6 +125,7 @@
     #define XMSS_SIGN xmss_sign
     #define XMSS_SIGN_OPEN xmss_sign_open
     #define XMSS_REMAINING_SIG xmss_remaining_signatures
+    #define XMSS_TOTAL_SIG xmss_total_signatures
 #endif
 
 #if XMSS_SECRETKEYBYTES_SMALL_ENABLE
