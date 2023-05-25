@@ -1,4 +1,5 @@
 CC = clang
+SHELL := /bin/bash
 
 LIBOQS = -L/home/ubuntu/openssl/oqs/lib -I/home/ubuntu/openssl/oqs/include/
 OPENSSL = -L/home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib -I/home/linuxbrew/.linuxbrew/opt/openssl@1.1/include
@@ -65,11 +66,11 @@ test/sign_KAT: sign.c sign_params.h sign.h test/sign_KAT.c $(SOURCES) $(OBJS) $(
 
 test/sign_gen_NIST_KAT: sign.c sign_params.h sign.h test/sign_gen_NIST_KAT.c $(SOURCES) $(OBJS) $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_gen_NIST_KAT.c  -DXMSS_SECRETKEYBYTES_SMALL_ENABLE $< $(LDLIBS)
-	$@
+	time $@
 
 test/sign_test_NIST_KAT: sign.c sign_params.h sign.h test/sign_test_NIST_KAT.c $(SOURCES) $(OBJS) $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_test_NIST_KAT.c  -DXMSS_SECRETKEYBYTES_SMALL_ENABLE $< $(LDLIBS)
-	$@
+	time $@
 
 test/sign_bench: sign.c sign_params.h sign.h test/sign_bench.c $(SOURCES) $(OBJS) $(HEADERS)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_bench.c  -DXMSS_SECRETKEYBYTES_SMALL_ENABLE $< $(LDLIBS)
@@ -80,11 +81,11 @@ test/sign_KAT_fast: sign.c sign_params.h sign.h test/sign_KAT.c $(SOURCES_FAST) 
 
 test/sign_gen_NIST_KAT_fast: sign.c sign_params.h sign.h test/sign_gen_NIST_KAT.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_gen_NIST_KAT.c $< $(LDLIBS)
-	$@
+	time $@
 
 test/sign_test_NIST_KAT_fast: sign.c sign_params.h sign.h test/sign_test_NIST_KAT.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_test_NIST_KAT.c $< $(LDLIBS)
-	$@
+	time $@
 
 test/sign_bench_fast: sign.c sign_params.h sign.h test/sign_bench.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_bench.c  $< $(LDLIBS)
