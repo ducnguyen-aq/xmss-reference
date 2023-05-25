@@ -94,7 +94,11 @@ int main(void) {
 
 	// Init the seed for NIST-KAT AES random generator
 	memset(buf, 0, sizeof(buf));
-	randombytes_init(buf);
+    if (randombytes_init(buf))
+    {
+        printf("Initialize seed failed\n");
+        return 1;
+    }
 
 	// Start generating KAT
 	printf("%s KAT:\n", XMSS_OID);
