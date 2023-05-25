@@ -27,11 +27,9 @@ void    fprintBstr(FILE *fp, char *s, unsigned char *a, unsigned long long l);
 
 int
 main() {
-	char                fn_req[128], fn_rsp[128];
-	FILE                *fp_req, *fp_rsp;
+	char                fn_rsp[128];
+	FILE                *fp_rsp;
 	uint8_t             seed[48];
-	uint8_t             msg[3300];
-	uint8_t             entropy_input[48];
 	uint8_t             *m, *sm;
 	uint8_t             *sm_kat;
 	unsigned long long  mlen, smlen, max, remain;
