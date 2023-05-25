@@ -24,8 +24,10 @@ TESTS = test/wots \
 		test/xmssmt_fast \
 		test/maxsigsxmss \
 		test/maxsigsxmssmt \
-		test/sign_test \
-		test/sign_test_slow
+		test/sign_KAT \
+		test/sign_KAT_fast \
+		test/sign_bench \
+		test/sign_bench_fast
 
 UI = ui/xmss_keypair \
 	 ui/xmss_sign \
@@ -52,11 +54,18 @@ test: $(TESTS:=.exec)
 test/%.exec: test/%
 	@$<
 
-test/sign_test: sign.c sign_params.h sign.h test/sign_test.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
-	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_test.c -DDEBUG $< $(LDLIBS)
+test/sign_KAT: sign.c sign_params.h sign.h test/sign_KAT.c $(SOURCES) $(OBJS) $(HEADERS)
+	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_KAT.c  -DXMSS_SECRETKEYBYTES_SMALL_ENABLE $< $(LDLIBS)
 
-test/sign_test_slow: sign.c sign_params.h sign.h test/sign_test.c $(SOURCES) $(OBJS) $(HEADERS)
-	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_test.c  -DDEBUG -DXMSS_SECRETKEYBYTES_SMALL_ENABLE -DNORANDOM $< $(LDLIBS)
+test/sign_bench: sign.c sign_params.h sign.h test/sign_bench.c $(SOURCES) $(OBJS) $(HEADERS)
+	$(CC) $(CFLAGS) -o $@ $(SOURCES) test/sign_bench.c  -DXMSS_SECRETKEYBYTES_SMALL_ENABLE $< $(LDLIBS)
+
+test/sign_KAT_fast: sign.c sign_params.h sign.h test/sign_KAT_fast.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
+	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_KAT.c $< $(LDLIBS)
+
+test/sign_bench_fast: sign.c sign_params.h sign.h test/sign_bench.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
+	$(CC) $(CFLAGS) -o $@ $(SOURCES_FAST) test/sign_bench.c  $< $(LDLIBS)
+
 
 test/xmss_fast: test/xmss.c $(SOURCES_FAST) $(OBJS) $(HEADERS_FAST)
 	$(CC) -DXMSS_SIGNATURES=1024 $(CFLAGS) -o $@ $(SOURCES_FAST) $< $(LDLIBS)
