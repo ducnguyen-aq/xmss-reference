@@ -1,5 +1,5 @@
 external/test/*
-!test/*.c
+!external/test/*.c
 external/ui/*
-!ui/*.c
+!external/ui/*.c
 .vscode/
