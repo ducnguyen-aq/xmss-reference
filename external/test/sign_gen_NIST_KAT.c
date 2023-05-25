@@ -71,6 +71,8 @@ main() {
 	for (int i = 0; i < 16; i++) {
 		fprintf(fp_req, "count = %d\n", i);
 		randombytes(seed, 48);
+		// Make sure to msg is the first thing we read from randombytes
+		randombytes_init(seed);
 		fprintBstr(fp_req, "seed = ", seed, 48);
 		mlen = 33 * (i + 1);
 		fprintf(fp_req, "mlen = %llu\n", mlen);
