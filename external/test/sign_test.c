@@ -76,7 +76,9 @@ int test_keygen(unsigned char *pk, unsigned char *sk)
     int ret;
     double result;
 
+#if BENCH
     printf("Generating keypair.. %s\n", XMSS_OID);
+#endif
 
     clock_gettime(CLOCK_REALTIME, &start);
     ret = crypto_sign_keypair(pk, sk);
@@ -157,25 +159,19 @@ int test_sign_verify(unsigned char *sm,
 int test_remain(unsigned char *sk)
 {
     unsigned long long remain = 0, max;
-    uint32_t oid = 0;
-    xmss_params params;
     int ret;
+
     ret = crypto_remaining_signatures(&remain, sk);
 
-    for (int i = 0; i < XMSS_OID_LEN; i++)
-    {
-        oid |= sk[XMSS_OID_LEN - i - 1] << (i * 8);
+    if (ret) {
+        printf("    Can't get remaining signatures from sk\n");
     }
 
-#if XMSSMT
-    if (xmssmt_parse_oid(&params, oid))
-#else
-    if (xmss_parse_oid(&params, oid))
-#endif
-    {
-        return -1;
+    ret = crypto_total_signatures(&max, sk);
+
+    if (ret) {
+        printf("    Can't get maximum signatures from sk\n");
     }
-    max = ((1ULL << params.full_height) - 1);
 
     printf("used = %lld, remain = %lld, max = %lld\n", max - remain, remain, max);
 
