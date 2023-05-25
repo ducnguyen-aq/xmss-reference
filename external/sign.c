@@ -15,9 +15,9 @@
  * Description: Generates public and private key.
  *
  * Arguments:   - uint8_t *pk: pointer to output public key (allocated
- *                             array of CRYPTO_PUBLIC_KEY bytes)
+ *                             array of CRYPTO_PUBLICKEYBYTES bytes)
  *              - uint8_t *sk: pointer to output private key (allocated
- *                             array of CRYPTO_SECRET_KEY bytes)
+ *                             array of CRYPTO_SECRETKEYBYTES bytes)
  *
  * Returns 0 (success), -1 otherwise
  **************************************************/

@@ -1,5 +1,7 @@
-test/*
-!test/*.c
-ui/*
-!ui/*.c
+external/test/*
+!external/test/*.c
+external/ui/*
+!external/ui/*.c
 .vscode/
+*.req
+*.rsp
