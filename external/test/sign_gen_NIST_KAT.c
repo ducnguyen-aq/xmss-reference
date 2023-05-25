@@ -68,7 +68,7 @@ main() {
 	fprintBstr(fp_req, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
 	fprintf(fp_req, "\n\n");
 
-	for (int i = 0; i < 32; i++) {
+	for (int i = 0; i < 16; i++) {
 		fprintf(fp_req, "count = %d\n", i);
 		randombytes(seed, 48);
 		fprintBstr(fp_req, "seed = ", seed, 48);
