@@ -40,12 +40,12 @@ main() {
 	int                 ret_val;
 
 	// Create the REQUEST file
-	sprintf(fn_req, "PQCsignKAT_%.16s.req", CRYPTO_ALGNAME);
+	sprintf(fn_req, "PQCsignKAT_%.32s.req", CRYPTO_ALGNAME);
 	if ( (fp_req = fopen(fn_req, "w")) == NULL ) {
 		printf("Couldn't open <%s> for write\n", fn_req);
 		return KAT_FILE_OPEN_ERROR;
 	}
-	sprintf(fn_rsp, "PQCsignKAT_%.16s.rsp", CRYPTO_ALGNAME);
+	sprintf(fn_rsp, "PQCsignKAT_%.32s.rsp", CRYPTO_ALGNAME);
 	if ( (fp_rsp = fopen(fn_rsp, "w")) == NULL ) {
 		printf("Couldn't open <%s> for write\n", fn_rsp);
 		return KAT_FILE_OPEN_ERROR;
@@ -78,6 +78,7 @@ main() {
 		fprintBstr(fp_req, "msg = ", msg, mlen);
 		fprintf(fp_req, "smlen =\n");
 		fprintf(fp_req, "sm =\n");
+        fprintf(fp_req, "sklen =\n");
         fprintf(fp_req, "sk =\n");
         fprintf(fp_req, "remain =\n");
 		fprintf(fp_req, "max =\n\n");
@@ -143,6 +144,7 @@ main() {
 		}
 		fprintf(fp_rsp, "smlen = %llu\n", smlen);
 		fprintBstr(fp_rsp, "sm = ", sm, smlen);
+        fprintf(fp_rsp, "sklen = %u\n", CRYPTO_SECRETKEYBYTES);
         fprintBstr(fp_rsp, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
 
 		if ( (ret_val = crypto_sign_open(m, mlen, sm, smlen, pk)) != 0) {
