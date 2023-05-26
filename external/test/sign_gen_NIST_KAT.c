@@ -37,7 +37,7 @@ main() {
 	unsigned long long  mlen, smlen, max, remain;
 	int                 count;
 	int                 done;
-	uint8_t             pk[CRYPTO_PUBLICKEYBYTES], sk[CRYPTO_SECRETKEYBYTES];
+	uint8_t             pk[CRYPTO_PUBLICKEYBYTES] = {0}, sk[CRYPTO_SECRETKEYBYTES] = {0};
 	int                 ret_val;
 
 	// Create the REQUEST file

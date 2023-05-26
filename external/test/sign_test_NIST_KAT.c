@@ -37,7 +37,7 @@ main() {
 	unsigned long long  smlen_kat, sklen_kat, max_kat, remain_kat;
 	int                 count;
 	int                 done;
-	uint8_t             pk[CRYPTO_PUBLICKEYBYTES], sk[CRYPTO_SECRETKEYBYTES], sk_kat[CRYPTO_SECRETKEYBYTES];
+	uint8_t             pk[CRYPTO_PUBLICKEYBYTES] = {0}, sk[CRYPTO_SECRETKEYBYTES] = {0}, sk_kat[CRYPTO_SECRETKEYBYTES] = {0};
 	int                 ret_val;
 
 	sprintf(fn_rsp, "PQCsignKAT_%.32s.rsp", CRYPTO_ALGNAME);

@@ -44,6 +44,9 @@ KATS = test/sign_gen_NIST_KAT \
 	   test/sign_gen_NIST_KAT_fast \
 	   test/sign_test_NIST_KAT_fast
 
+KATS_FAST = test/sign_gen_NIST_KAT_fast \
+			test/sign_test_NIST_KAT_fast
+
 BENCH = test/sign_bench \
 		test/sign_bench_fast
 
@@ -52,6 +55,7 @@ all: kat bench
 tests: $(TESTS)
 ui: $(UI)
 kat: $(KATS)
+kat_fast: $(KATS_FAST)
 bench: $(BENCH)
 
 test: $(TESTS:=.exec)
