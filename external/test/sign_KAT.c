@@ -1,9 +1,10 @@
-#include "../sign.h"
-#include "../sign_params.h"
-#include "../randombytes.h"
+#include <oqs/rand.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "../sign.h"
+#include "../sign_params.h"
 
 #define XMSS_SIGNATURES 8
 
@@ -94,12 +95,16 @@ int main(void) {
 
 	// Init the seed for NIST-KAT AES random generator
 	memset(buf, 0, sizeof(buf));
-    if (randombytes_init(buf))
+	/* Using AES as random generator */
+    if (OQS_randombytes_switch_algorithm("NIST-KAT") != OQS_SUCCESS)
     {
         printf("Initialize seed failed\n");
         return 1;
     }
 
+    /* Initialize NIST KAT seed by value in `buf` */
+    OQS_randombytes_nist_kat_init_256bit(buf, NULL);
+    
 	// Start generating KAT
 	printf("%s KAT:\n", XMSS_OID);
 

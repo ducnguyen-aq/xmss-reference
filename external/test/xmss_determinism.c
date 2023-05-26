@@ -4,7 +4,7 @@
 
 #include "../params.h"
 #include "../xmss.h"
-#include "../randombytes.h"
+#include <oqs/rand.h>
 
 #define MLEN 32
 
@@ -35,7 +35,7 @@ int main()
     memcpy(sk2, sk, XMSS_OID_LEN + params.sk_bytes);
 
     /* Sign a random message (but twice the same one). */
-    randombytes(m, MLEN);
+    OQS_randombytes(m, MLEN);
 
     xmss_sign(sk, sm, &smlen, m, MLEN);
     xmss_sign(sk2, sm2, &smlen, m, MLEN);

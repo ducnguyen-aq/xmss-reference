@@ -1,10 +1,11 @@
-#include "../sign.h"
-#include "../sign_params.h"
-#include "../randombytes.h"
+#include <oqs/rand.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+
+#include "../sign.h"
+#include "../sign_params.h"
 
 #define XMSS_SIGNATURES 8
 
@@ -148,7 +149,7 @@ int main(void) {
 	unsigned char m[64];
 	const unsigned long long mlen = sizeof(m);
 
-	randombytes(m, sizeof(m));
+	OQS_randombytes(m, sizeof(m));
 
 	if (bench_keygen(pk, sk)) {
 		return 1;

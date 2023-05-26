@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <oqs/rand.h>
 
 #include "../wots.h"
-#include "../randombytes.h"
 #include "../params.h"
 
 int main()
@@ -23,10 +23,10 @@ int main()
     unsigned char m[params.n];
     uint32_t addr[8] = {0};
 
-    randombytes(seed, params.n);
-    randombytes(pub_seed, params.n);
-    randombytes(m, params.n);
-    randombytes((unsigned char *)addr, 8 * sizeof(uint32_t));
+    OQS_randombytes(seed, params.n);
+    OQS_randombytes(pub_seed, params.n);
+    OQS_randombytes(m, params.n);
+    OQS_randombytes((unsigned char *)addr, 8 * sizeof(uint32_t));
 
     printf("Testing WOTS signature and PK derivation.. ");
 

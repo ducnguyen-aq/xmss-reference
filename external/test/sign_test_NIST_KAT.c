@@ -10,7 +10,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "../randombytes.h"
+#include <oqs/rand.h>
+
 #include "../sign.h"
 #include "../sign_params.h"
 
@@ -36,7 +37,7 @@ main() {
 	unsigned long long  smlen_kat, sklen_kat, max_kat, remain_kat;
 	int                 count;
 	int                 done;
-	uint8_t             pk[CRYPTO_PUBLICKEYBYTES], sk[CRYPTO_SECRETKEYBYTES], sk_kat[CRYPTO_SECRETKEYBYTES];
+	uint8_t             pk[CRYPTO_PUBLICKEYBYTES] = {0}, sk[CRYPTO_SECRETKEYBYTES] = {0}, sk_kat[CRYPTO_SECRETKEYBYTES] = {0};
 	int                 ret_val;
 
 	sprintf(fn_rsp, "PQCsignKAT_%.32s.rsp", CRYPTO_ALGNAME);
@@ -55,6 +56,11 @@ main() {
 		return KAT_DATA_ERROR;
 	}
 
+	if (OQS_randombytes_switch_algorithm("NIST-KAT") != OQS_SUCCESS)
+    {
+        return OQS_ERROR;
+    }
+
 	done = 0;
 	do {
 		if ( FindMarker(fp_rsp, "count = ") ) {
@@ -69,7 +75,7 @@ main() {
 			return KAT_DATA_ERROR;
 		}
 
-		randombytes_init(seed);
+		OQS_randombytes_nist_kat_init_256bit(seed, NULL);
 
 		if ( FindMarker(fp_rsp, "mlen = ") ) {
 			fscanf(fp_rsp, "%llu", &mlen);

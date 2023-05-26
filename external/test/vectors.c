@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <oqs/rand.h>
 
 #include "../wots.h"
-#include "../randombytes.h"
 #include "../params.h"
 #include "../utils.h"
 #include "../xmss_commons.h"

@@ -10,7 +10,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "../randombytes.h"
+#include <oqs/rand.h>
+
 #include "../sign.h"
 #include "../sign_params.h"
 
@@ -36,7 +37,7 @@ main() {
 	unsigned long long  mlen, smlen, max, remain;
 	int                 count;
 	int                 done;
-	uint8_t             pk[CRYPTO_PUBLICKEYBYTES], sk[CRYPTO_SECRETKEYBYTES];
+	uint8_t             pk[CRYPTO_PUBLICKEYBYTES] = {0}, sk[CRYPTO_SECRETKEYBYTES] = {0};
 	int                 ret_val;
 
 	// Create the REQUEST file
@@ -55,9 +56,14 @@ main() {
 		entropy_input[i] = i;
 	}
 
-	if (randombytes_init(entropy_input)) {
-		return KAT_CRYPTO_FAILURE;
-	}
+	/* Using AES as random generator */
+    if (OQS_randombytes_switch_algorithm("NIST-KAT") != OQS_SUCCESS)
+    {
+        return KAT_CRYPTO_FAILURE;
+    }
+
+    /* Initialize NIST KAT seed by value in `buf` */
+    OQS_randombytes_nist_kat_init_256bit(entropy_input, NULL);
 
 	// Generate the public/private keypair
 	if ( (ret_val = crypto_sign_keypair(pk, sk)) != 0) {
@@ -70,13 +76,13 @@ main() {
 
 	for (int i = 0; i < 16; i++) {
 		fprintf(fp_req, "count = %d\n", i);
-		randombytes(seed, 48);
+		OQS_randombytes(seed, 48);
 		// Make sure to msg is the first thing we read from randombytes
-		randombytes_init(seed);
+		OQS_randombytes_nist_kat_init_256bit(seed, NULL);
 		fprintBstr(fp_req, "seed = ", seed, 48);
 		mlen = 33 * (i + 1);
 		fprintf(fp_req, "mlen = %llu\n", mlen);
-		randombytes(msg, mlen);
+		OQS_randombytes(msg, mlen);
 		fprintBstr(fp_req, "msg = ", msg, mlen);
 		fprintf(fp_req, "smlen =\n");
 		fprintf(fp_req, "sm =\n");
@@ -126,7 +132,7 @@ main() {
 		}
 		fprintBstr(fp_rsp, "seed = ", seed, 48);
 
-		randombytes_init(seed);
+		OQS_randombytes_nist_kat_init_256bit(seed, NULL);
 
 		if ( FindMarker(fp_req, "mlen = ") ) {
 			fscanf(fp_req, "%llu", &mlen);
