@@ -10,7 +10,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#include "../randombytes.h"
+#include <oqs/rand.h>
+
 #include "../sign.h"
 #include "../sign_params.h"
 
@@ -55,6 +56,11 @@ main() {
 		return KAT_DATA_ERROR;
 	}
 
+	if (OQS_randombytes_switch_algorithm("NIST-KAT") != OQS_SUCCESS)
+    {
+        return OQS_ERROR;
+    }
+
 	done = 0;
 	do {
 		if ( FindMarker(fp_rsp, "count = ") ) {
@@ -69,7 +75,7 @@ main() {
 			return KAT_DATA_ERROR;
 		}
 
-		randombytes_init(seed);
+		OQS_randombytes_nist_kat_init_256bit(seed, NULL);
 
 		if ( FindMarker(fp_rsp, "mlen = ") ) {
 			fscanf(fp_rsp, "%llu", &mlen);

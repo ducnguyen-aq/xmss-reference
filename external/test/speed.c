@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <oqs/rand.h>
 
 #include "../xmss.h"
 #include "../params.h"
-#include "../randombytes.h"
 
 #define XMSS_MLEN 32
 
@@ -127,7 +127,7 @@ int main()
         struct timespec start, stop;
         double result;
 
-        randombytes(m, XMSS_MLEN);
+        OQS_randombytes(m, XMSS_MLEN);
 
         printf("Benchmarking variant %s\n", p);
 

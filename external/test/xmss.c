@@ -5,7 +5,7 @@
 
 #include "../xmss.h"
 #include "../params.h"
-#include "../randombytes.h"
+#include <oqs/rand.h>
 
 #define XMSS_MLEN 32
 
@@ -48,7 +48,7 @@ int main()
     unsigned long long smlen;
     unsigned long long mlen;
 
-    randombytes(m, XMSS_MLEN);
+    OQS_randombytes(m, XMSS_MLEN);
 
     XMSS_KEYPAIR(pk, sk, oid);
 
