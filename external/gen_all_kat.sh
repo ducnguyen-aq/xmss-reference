@@ -24,3 +24,14 @@ do
     # Execute
     time test/sign_gen_NIST_KAT_fast
 done
+
+echo "XMSSMT=1"
+for i in $(jot -w 0x%x 8 17);
+do 
+    echo "-DXMSS_OID_INT=${i}"
+    new_cmd="${cmd} -DXMSSMT=1 -DXMSS_OID_INT=${i}"
+    # Compile
+    eval ${new_cmd}
+    # Execute
+    time test/sign_gen_NIST_KAT_fast
+done
