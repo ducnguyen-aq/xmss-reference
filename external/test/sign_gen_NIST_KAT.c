@@ -27,7 +27,7 @@ int ReadHex(FILE *infile, unsigned char *a, int Length, char *str);
 void    fprintBstr(FILE *fp, char *s, unsigned char *a, unsigned long long l);
 
 int
-main(void) {
+main() {
 	char                fn_req[128], fn_rsp[128];
 	FILE                *fp_req, *fp_rsp;
 	uint8_t             seed[48];
@@ -41,23 +41,12 @@ main(void) {
 	int                 ret_val;
 
 	// Create the REQUEST file
-	sprintf(fn_req, "%.48s.req", CRYPTO_ALGNAME);
-	sprintf(fn_rsp, "%.48s.rsp", CRYPTO_ALGNAME);
-	
-	// Remove the "/" in filename
-	for (unsigned i = 0; i < strlen(CRYPTO_ALGNAME); i++)
-	{
-		if (fn_req[i] == 47)
-		{
-			fn_req[i] = 45;
-			fn_rsp[i] = 45;
-		}
-	}
-
+	sprintf(fn_req, "PQCsignKAT_%.32s.req", CRYPTO_ALGNAME);
 	if ( (fp_req = fopen(fn_req, "w")) == NULL ) {
 		printf("Couldn't open <%s> for write\n", fn_req);
 		return KAT_FILE_OPEN_ERROR;
 	}
+	sprintf(fn_rsp, "PQCsignKAT_%.32s.rsp", CRYPTO_ALGNAME);
 	if ( (fp_rsp = fopen(fn_rsp, "w")) == NULL ) {
 		printf("Couldn't open <%s> for write\n", fn_rsp);
 		return KAT_FILE_OPEN_ERROR;
@@ -81,18 +70,11 @@ main(void) {
 		printf("crypto_sign_keypair returned <%d>\n", ret_val);
 		return KAT_CRYPTO_FAILURE;
 	}
-	fprintf(fp_req, "# %s\n\n", CRYPTO_ALGNAME);
 	fprintBstr(fp_req, "pk = ", pk, CRYPTO_PUBLICKEYBYTES);
 	fprintBstr(fp_req, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
 	fprintf(fp_req, "\n\n");
 
-	for (int i = 0; i < 48; i++) {
-		entropy_input[i] = i + 10;
-	}
-
-	// Init again to make sure the seed is consistent
-	OQS_randombytes_nist_kat_init_256bit(entropy_input, NULL);
-	for (int i = 0; i < 1; i++) {
+	for (int i = 0; i < 16; i++) {
 		fprintf(fp_req, "count = %d\n", i);
 		OQS_randombytes(seed, 48);
 		// Make sure to msg is the first thing we read from randombytes
@@ -104,9 +86,10 @@ main(void) {
 		fprintBstr(fp_req, "msg = ", msg, mlen);
 		fprintf(fp_req, "smlen =\n");
 		fprintf(fp_req, "sm =\n");
+		fprintf(fp_req, "sklen =\n");
+		fprintf(fp_req, "sk =\n");
 		fprintf(fp_req, "remain =\n");
-		fprintf(fp_req, "max =");
-		// fprintf(fp_req, "\n\n");
+		fprintf(fp_req, "max =\n\n");
 	}
 	fclose(fp_req);
 
@@ -136,7 +119,7 @@ main(void) {
 	done = 0;
 	do {
 		if ( FindMarker(fp_req, "count = ") ) {
-			ret_val = fscanf(fp_req, "%d", &count);
+			fscanf(fp_req, "%d", &count);
 		} else {
 			done = 1;
 			break;
@@ -152,7 +135,7 @@ main(void) {
 		OQS_randombytes_nist_kat_init_256bit(seed, NULL);
 
 		if ( FindMarker(fp_req, "mlen = ") ) {
-			ret_val = fscanf(fp_req, "%llu", &mlen);
+			fscanf(fp_req, "%llu", &mlen);
 		} else {
 			printf("ERROR: unable to read 'mlen' from <%s>\n", fn_req);
 			return KAT_DATA_ERROR;
@@ -174,6 +157,8 @@ main(void) {
 		}
 		fprintf(fp_rsp, "smlen = %llu\n", smlen);
 		fprintBstr(fp_rsp, "sm = ", sm, smlen);
+		fprintf(fp_rsp, "sklen = %u\n", CRYPTO_SECRETKEYBYTES);
+		fprintBstr(fp_rsp, "sk = ", sk, CRYPTO_SECRETKEYBYTES);
 
 		if ( (ret_val = crypto_sign_open(m, mlen, sm, smlen, pk)) != 0) {
 			printf("crypto_sign_open returned <%d>\n", ret_val);
@@ -192,14 +177,12 @@ main(void) {
 			return KAT_CRYPTO_FAILURE;
 		}
 
-		fprintf(fp_rsp, "max = %llu", max);
+		fprintf(fp_rsp, "max = %llu\n\n", max);
 
 		if (max - remain != (unsigned long long) count + 1) {
 			printf("secret key update failed\n");
 			return KAT_CRYPTO_FAILURE;
 		}
-
-		// fprintf(fp_rsp, "\n\n");
 
 		free(m);
 		free(sm);
