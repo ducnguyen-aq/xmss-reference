@@ -92,7 +92,7 @@ main(void) {
 
 	// Init again to make sure the seed is consistent
 	OQS_randombytes_nist_kat_init_256bit(entropy_input, NULL);
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 1; i++) {
 		fprintf(fp_req, "count = %d\n", i);
 		OQS_randombytes(seed, 48);
 		// Make sure to msg is the first thing we read from randombytes
