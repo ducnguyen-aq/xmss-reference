@@ -1,4 +1,4 @@
-#include "xmss_core.h"
+#include "../xmss_core.h"
 #include <stdint.h>
 #include <stdio.h>
 
@@ -31,7 +31,7 @@ int main(void) {
 			return -1;
 		}
 
-		printf("| %s \t| %x | %4u | %3u | %4u\n", params[i], oid, xmss.sk_bytes,
+		printf("| %s \t| 0x%02x | %4llu | %3u | %4u\n", params[i], oid, xmss.sk_bytes,
 		       xmss.pk_bytes, xmss.sig_bytes);
 	}
 
@@ -58,7 +58,7 @@ int main(void) {
 			return -1;
 		}
 
-		printf("| %s \t| %x | %5u | %3u | %4u\n", params_mt[i], oid_mt, xmss.sk_bytes,
+		printf("| %s \t| 0x%02x | %5llu | %3u | %4u\n", params_mt[i], oid_mt, xmss.sk_bytes,
 		       xmss.pk_bytes, xmss.sig_bytes);
 	}
 	return 0;
