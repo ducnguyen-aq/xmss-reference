@@ -27,20 +27,20 @@ int ReadHex(FILE *infile, unsigned char *a, int Length, char *str);
 void    fprintBstr(FILE *fp, char *s, unsigned char *a, unsigned long long l);
 
 int
-main(void) {
+main() {
 	char                fn_rsp[128];
 	FILE                *fp_rsp;
 	uint8_t             seed[48];
 	uint8_t             *m, *sm;
 	uint8_t             *sm_kat;
 	unsigned long long  mlen, smlen, max, remain;
-	unsigned long long  smlen_kat, max_kat, remain_kat;
+	unsigned long long  smlen_kat, sklen_kat, max_kat, remain_kat;
 	int                 count;
 	int                 done;
-	uint8_t             pk[CRYPTO_PUBLICKEYBYTES] = {0}, sk[CRYPTO_SECRETKEYBYTES] = {0};
+	uint8_t             pk[CRYPTO_PUBLICKEYBYTES] = {0}, sk[CRYPTO_SECRETKEYBYTES] = {0}, sk_kat[CRYPTO_SECRETKEYBYTES] = {0};
 	int                 ret_val;
 
-	sprintf(fn_rsp, "%.48s.rsp", CRYPTO_ALGNAME);
+	sprintf(fn_rsp, "PQCsignKAT_%.32s.rsp", CRYPTO_ALGNAME);
 	if ( (fp_rsp = fopen(fn_rsp, "r")) == NULL ) {
 		printf("Couldn't open <%s> for read\n", fn_rsp);
 		return KAT_FILE_OPEN_ERROR;
@@ -123,6 +123,29 @@ main(void) {
 		}
 		if (memcmp(sm, sm_kat, smlen)) {
             printf("ERROR: incorrect signed message sm count<%d>\n from <%s>\n", count, fn_rsp);
+			return KAT_CRYPTO_FAILURE;
+		}
+
+        // Test updated Secret Key: Compare with `sk` in KAT
+        if ( FindMarker(fp_rsp, "sklen = ") ) {
+			fscanf(fp_rsp, "%llu", &sklen_kat);
+		} else {
+			printf("ERROR: unable to read 'sklen' from <%s>\n", fn_rsp);
+			return KAT_DATA_ERROR;
+		}
+
+        if (sklen_kat != CRYPTO_SECRETKEYBYTES) {
+            printf("Error: incorrect 'sklen' from <%s>\n", fn_rsp);
+            return KAT_DATA_ERROR;
+        }
+
+		if ( !ReadHex(fp_rsp, sk_kat, CRYPTO_SECRETKEYBYTES, "sk = ") ) {
+			printf("ERROR: unable to read 'sk' from <%s>\n", fn_rsp);
+			return KAT_DATA_ERROR;
+		}
+
+		if (memcmp(sk, sk_kat, CRYPTO_SECRETKEYBYTES)) {
+            printf("ERROR: incorrect secret key sk count<%d>\n from <%s>\n", count, fn_rsp);
 			return KAT_CRYPTO_FAILURE;
 		}
 
