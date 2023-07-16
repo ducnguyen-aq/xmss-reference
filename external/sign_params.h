@@ -112,6 +112,17 @@
         #define XMSS_PUBLICKEYBYTES 64
         #define XMSS_SIGNBYTES 9251
 
+    #elif XMSS_OID_INT == 0x11
+        #define XMSS_OID "XMSSMT-SHAKE_20/2_256"
+        #define XMSS_SECRETKEYBYTES 5998
+        #define XMSS_PUBLICKEYBYTES 64
+        #define XMSS_SIGNBYTES 4963
+    #elif XMSS_OID_INT == 0x12
+        #define XMSS_OID "XMSSMT-SHAKE_20/4_256"
+        #define XMSS_SECRETKEYBYTES 10938
+        #define XMSS_PUBLICKEYBYTES 64
+        #define XMSS_SIGNBYTES 9251
+
     /* 
     * Maximum signatures: 2^h - 1 = 2^40 - 1
     * XMSS^MT has bigger signature and secret key (secret is not transfer), but better speed
@@ -132,6 +143,21 @@
         #define XMSS_PUBLICKEYBYTES 64
         #define XMSS_SIGNBYTES 18469
 
+    #elif XMSS_OID_INT == 0x13
+        #define XMSS_OID "XMSSMT-SHAKE_40/2_256"
+        #define XMSS_SECRETKEYBYTES 9600
+        #define XMSS_PUBLICKEYBYTES 64
+        #define XMSS_SIGNBYTES 5605
+    #elif XMSS_OID_INT == 0x14
+        #define XMSS_OID "XMSSMT-SHAKE_40/4_256"
+        #define XMSS_SECRETKEYBYTES 15252
+        #define XMSS_PUBLICKEYBYTES 64
+        #define XMSS_SIGNBYTES 9893
+    #elif XMSS_OID_INT == 0x15
+        #define XMSS_OID "XMSSMT-SHAKE_40/8_256"
+        #define XMSS_SECRETKEYBYTES 24516
+        #define XMSS_PUBLICKEYBYTES 64
+        #define XMSS_SIGNBYTES 18469
     /* 
     * Maximum signatures: 2^h - 1 = 2^60 - 1
     * XMSS^MT has bigger signature and secret key (secret is not transfer), but better speed
@@ -149,6 +175,22 @@
         #define XMSS_SIGNBYTES 14824
     #elif XMSS_OID_INT == 0x8
         #define XMSS_OID "XMSSMT-SHA2_60/12_256"
+        #define XMSS_SECRETKEYBYTES 38095
+        #define XMSS_PUBLICKEYBYTES 64
+        #define XMSS_SIGNBYTES 27688
+
+    #elif XMSS_OID_INT == 0x16
+        #define XMSS_OID "XMSSMT-SHAKE_60/3_256"
+        #define XMSS_SECRETKEYBYTES 16629
+        #define XMSS_PUBLICKEYBYTES 64
+        #define XMSS_SIGNBYTES 8392
+    #elif XMSS_OID_INT == 0x17
+        #define XMSS_OID "XMSSMT-SHAKE_60/6_256"
+        #define XMSS_SECRETKEYBYTES 24507
+        #define XMSS_PUBLICKEYBYTES 64
+        #define XMSS_SIGNBYTES 14824
+    #elif XMSS_OID_INT == 0x18
+        #define XMSS_OID "XMSSMT-SHAKE_60/12_256"
         #define XMSS_SECRETKEYBYTES 38095
         #define XMSS_PUBLICKEYBYTES 64
         #define XMSS_SIGNBYTES 27688
