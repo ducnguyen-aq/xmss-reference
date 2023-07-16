@@ -4,9 +4,6 @@
 #include "params.h"
 #include "xmss.h"
 
-#define XMSSMT 0
-#define XMSS_OID_INT 0x1
-
 #ifndef XMSSMT
 #error "Please specify XMSS or XMSSMT."
 #endif
