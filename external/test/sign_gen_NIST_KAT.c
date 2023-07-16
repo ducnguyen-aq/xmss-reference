@@ -105,7 +105,8 @@ main(void) {
 		fprintf(fp_req, "smlen =\n");
 		fprintf(fp_req, "sm =\n");
 		fprintf(fp_req, "remain =\n");
-		fprintf(fp_req, "max =\n");
+		fprintf(fp_req, "max =");
+		// fprintf(fp_req, "\n\n");
 	}
 	fclose(fp_req);
 
@@ -191,7 +192,7 @@ main(void) {
 			return KAT_CRYPTO_FAILURE;
 		}
 
-		fprintf(fp_rsp, "max = %llu\n", max);
+		fprintf(fp_rsp, "max = %llu", max);
 
 		if (max - remain != (unsigned long long) count + 1) {
 			printf("secret key update failed\n");
