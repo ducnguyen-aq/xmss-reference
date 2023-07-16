@@ -1,13 +1,14 @@
 CC = clang
 SHELL := /bin/bash
 
-LIBOQS = -L/home/ubuntu/openssl/oqs/lib -I/home/ubuntu/openssl/oqs/include/
-OPENSSL = -L/home/linuxbrew/.linuxbrew/opt/openssl@1.1/lib -I/home/linuxbrew/.linuxbrew/opt/openssl@1.1/include
+LIBOQS = -L/Users/ductri.nguyen/Work/openssl/oqs/lib -I/Users/ductri.nguyen/Work/openssl/oqs/include/
+OPENSSL = -L/opt/homebrew/opt/openssl@1.1/lib -I/opt/homebrew/opt/openssl@1.1/include
 
 CFLAGS = -Wall -O3 -Wextra -Wpedantic #-fsanitize-address-use-after-return=always -fsanitize=address
 LDLIBS =  $(LIBOQS) $(OPENSSL) -lcrypto -loqs
 
-CORES_HASH = core_hash_n32_sha2.c
+# CORES_HASH = core_hash_n32_sha2.c
+#TODO: I have to change the corehash here
 
 SOURCES = params.c hash.c hash_address.c wots.c xmss.c xmss_core.c xmss_commons.c utils.c $(CORES_HASH)
 HEADERS = params.h hash.h hash_address.h wots.h xmss.h xmss_core.h xmss_commons.h utils.h
@@ -50,6 +51,8 @@ KATS_FAST = test/sign_gen_NIST_KAT_fast \
 BENCH = test/sign_bench \
 		test/sign_bench_fast
 
+INFO = print_keysize_signature_size
+
 all: kat bench
 
 tests: $(TESTS)
@@ -57,10 +60,15 @@ ui: $(UI)
 kat: $(KATS)
 kat_fast: $(KATS_FAST)
 bench: $(BENCH)
+info: $(INFO)
 
 test: $(TESTS:=.exec)
 
 .PHONY: clean test
+
+print_keysize_signature_size: print_keysize_signature_size.c
+	$(CC) $(CFLAGS) -o $@ hash.c hash_address.c wots.c utils.c xmss_commons.c xmss_core_fast.c params.c -DXMSS_SECRETKEYBYTES_SMALL_ENABLE $< $(LDLIBS)
+	./$@
 
 test/%.exec: test/%
 	@$<
