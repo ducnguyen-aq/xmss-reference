@@ -44,7 +44,7 @@ BENCH = test/sign_bench_fast
 
 INFO = test/print_keysize_signature_size
 
-all: kat bench
+all: info kat bench
 
 tests: $(TESTS)
 ui: $(UI)
@@ -124,6 +124,7 @@ clean:
 	-$(RM) $(TESTS)
 	-$(RM) $(KATS)
 	-$(RM) $(BENCH)
+	-$(RM) $(INFO)
 	-$(RM) *.rsp *.req
 	-$(RM) test/vectors
 	-$(RM) $(UI)
