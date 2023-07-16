@@ -27,7 +27,7 @@ int ReadHex(FILE *infile, unsigned char *a, int Length, char *str);
 void    fprintBstr(FILE *fp, char *s, unsigned char *a, unsigned long long l);
 
 int
-main() {
+main(void) {
 	char                fn_req[128], fn_rsp[128];
 	FILE                *fp_req, *fp_rsp;
 	uint8_t             seed[48];
