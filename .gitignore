@@ -5,3 +5,4 @@ external/ui/*
 .vscode/
 external/*.req
 external/*.rsp
+external/print_keysize_signature_size
